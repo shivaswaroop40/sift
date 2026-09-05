@@ -58,7 +58,8 @@ jobs:
 
   deploy:
     needs: [ingest]
-    if: always() && (needs.ingest.result == 'success' || github.event_name == 'push')
+    # Deploy whatever is on main even if today's ingest failed: the site keeps the last good edition.
+    if: always() && needs.ingest.result != 'cancelled'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

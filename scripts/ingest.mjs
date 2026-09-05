@@ -106,10 +106,11 @@ for (const domain of domains) {
   }
   log(`selected ${chosen.length} stories`);
 
-  // 4. Summarise and write
-  if (FORCE) clearEdition(domain.slug, date);
+  // 4. Summarise. Nothing on disk is touched until every story is ready, so a crash mid-run
+  //    leaves yesterday's (or this morning's) edition in place instead of an empty folder.
   let rank = 0;
   const written = [];
+  const stories = [];
   for (const s of chosen) {
     rank++;
     let title = s.title, body, why_read = '', tags = [], scoredFlag = !DRY, model = null;
@@ -150,10 +151,14 @@ for (const domain of domains) {
       model,
       body,
     };
-    writeStory(domain.slug, date, story);
+    stories.push(story);
     written.push({ rank, id: s.id, title, source: s.source, interest: s.interest });
     log(`  #${String(rank).padStart(2)} ${s.interest.toFixed(1)}  ${truncate(title, 70)}  [${s.source}]`);
   }
+
+  // 5. Write. Clear the old edition only now, with the replacement fully in hand.
+  if (FORCE) clearEdition(domain.slug, date);
+  for (const story of stories) writeStory(domain.slug, date, story);
 
   writeEdition(domain.slug, date, {
     domain: domain.slug,
@@ -167,7 +172,7 @@ for (const domain of domains) {
     triage_usage: usage,
   });
 
-  // 5. Seen store: everything we looked at, so tomorrow only sees new items.
+  // 6. Seen store: everything we looked at, so tomorrow only sees new items.
   for (const c of candidates) seen[c.id] = seen[c.id] || now.toISOString();
   saveSeen(domain.slug, seen);
   log(`wrote ${written.length} stories to ${path.relative(process.cwd(), dir)}`);

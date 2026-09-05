@@ -9,11 +9,12 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/check-build.mjs",
     "preview": "astro preview",
     "ingest": "node scripts/ingest.mjs",
     "ingest:dry": "node scripts/ingest.mjs --dry-run",
-    "feeds:check": "node scripts/check-feeds.mjs"
+    "feeds:check": "node scripts/check-feeds.mjs",
+    "check:build": "node scripts/check-build.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.124.0",
