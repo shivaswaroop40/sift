@@ -38,6 +38,8 @@ jobs:
       - name: Build today's editions
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_BASE_URL: ${{ vars.ANTHROPIC_BASE_URL }}
+          SIFT_MODEL: ${{ vars.SIFT_MODEL }}
         run: |
           ARGS=""
           [ -n "${{ inputs.domain }}" ] && ARGS="$ARGS --domain ${{ inputs.domain }}"

@@ -5,28 +5,33 @@ import { VOICE } from '../../site.config.ts';
 
 export const MODEL = process.env.SIFT_MODEL || 'claude-opus-5';
 
+// A gateway such as OpenCode Zen (ANTHROPIC_BASE_URL=https://opencode.ai/zen/v1) speaks the Messages
+// API but is not guaranteed to pass beta headers through, so beta-only features are skipped there.
+export const VIA_GATEWAY = Boolean(process.env.ANTHROPIC_BASE_URL) && !/api\.anthropic\.com/.test(process.env.ANTHROPIC_BASE_URL);
+
 let client;
 function getClient() {
-  client ??= new Anthropic();
+  client ??= new Anthropic(); // reads ANTHROPIC_API_KEY and ANTHROPIC_BASE_URL from the environment
   return client;
 }
 
-// Shared request shape. Server-side refusal fallbacks are on so a rare policy decline on one
-// item does not sink the whole edition; the API re-runs the request on a fallback model itself.
+// Shared request shape. On the first-party API, server-side refusal fallbacks are on so a rare policy
+// decline on one item does not sink the whole edition; the API re-runs the request on a fallback model.
 async function structured({ system, user, schema, effort = 'medium', maxTokens = 16000 }) {
   const c = getClient();
+  const params = {
+    model: MODEL,
+    max_tokens: maxTokens,
+    system: [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }],
+    messages: [{ role: 'user', content: user }],
+    output_config: { format: zodOutputFormat(schema), effort },
+  };
   let lastErr;
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const res = await c.beta.messages.parse({
-        model: MODEL,
-        max_tokens: maxTokens,
-        betas: ['server-side-fallback-2026-07-01'],
-        fallbacks: 'default',
-        system: [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }],
-        messages: [{ role: 'user', content: user }],
-        output_config: { format: zodOutputFormat(schema), effort },
-      });
+      const res = VIA_GATEWAY
+        ? await c.messages.parse(params)
+        : await c.beta.messages.parse({ ...params, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' });
       if (res.stop_reason === 'refusal') {
         throw new Error(`refused (${res.stop_details?.category ?? 'unknown'})`);
       }

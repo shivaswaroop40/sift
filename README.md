@@ -43,3 +43,7 @@ Useful flags: `--dry-run` (no model calls, heuristic ranking, feed excerpts as b
 ## Cost
 
 Triage is one call per 40 candidates with a cached system prompt. Summaries are one call per kept story. A day across four domains is roughly 20 triage calls and 45 summary calls on `claude-opus-5`. Set `SIFT_MODEL=claude-sonnet-5` to run cheaper.
+
+## Using an OpenCode Zen key
+
+Zen exposes the Anthropic Messages API at `https://opencode.ai/zen/v1/messages`, so the same code works with a Zen key. Set `ANTHROPIC_API_KEY` to the Zen key and `ANTHROPIC_BASE_URL=https://opencode.ai/zen/v1`. The pipeline detects the gateway and skips the beta-only refusal fallback, which a proxy may not pass through. In GitHub Actions, add `ANTHROPIC_BASE_URL` as a repository variable.
