@@ -3,7 +3,9 @@ import { z } from 'zod';
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import { VOICE } from '../../site.config.ts';
 
-export const MODEL = process.env.SIFT_MODEL || 'claude-opus-5';
+// Provider: 'anthropic' (default), 'chat' (OpenAI chat completions), 'responses' (OpenAI Responses API).
+export const PROVIDER = process.env.SIFT_PROVIDER || 'anthropic';
+export const MODEL = process.env.SIFT_MODEL || (PROVIDER === 'anthropic' ? 'claude-opus-5' : 'minimax-m3');
 
 // A gateway such as OpenCode Zen (ANTHROPIC_BASE_URL=https://opencode.ai/zen/v1) speaks the Messages
 // API but is not guaranteed to pass beta headers through, so beta-only features are skipped there.
@@ -18,6 +20,11 @@ function getClient() {
 // Shared request shape. On the first-party API, server-side refusal fallbacks are on so a rare policy
 // decline on one item does not sink the whole edition; the API re-runs the request on a fallback model.
 async function structured({ system, user, schema, effort = 'medium', maxTokens = 16000 }) {
+  if (PROVIDER !== 'anthropic') {
+    const compat = await import('./openai-compat.mjs');
+    const fn = PROVIDER === 'responses' ? compat.responsesStructured : compat.chatStructured;
+    return fn({ model: MODEL, system, user, schema, maxTokens });
+  }
   const c = getClient();
   const params = {
     model: MODEL,

@@ -44,6 +44,23 @@ Useful flags: `--dry-run` (no model calls, heuristic ranking, feed excerpts as b
 
 Triage is one call per 40 candidates with a cached system prompt. Summaries are one call per kept story. A day across four domains is roughly 20 triage calls and 45 summary calls on `claude-opus-5`. Set `SIFT_MODEL=claude-sonnet-5` to run cheaper.
 
-## Using an OpenCode Zen key
+## Using OpenCode Zen or Go
 
-Zen exposes the Anthropic Messages API at `https://opencode.ai/zen/v1/messages`, so the same code works with a Zen key. Set `ANTHROPIC_API_KEY` to the Zen key and `ANTHROPIC_BASE_URL=https://opencode.ai/zen/v1`. The pipeline detects the gateway and skips the beta-only refusal fallback, which a proxy may not pass through. In GitHub Actions, add `ANTHROPIC_BASE_URL` as a repository variable.
+Two cases, chosen with `SIFT_PROVIDER`.
+
+**Claude models on Zen** speak the Anthropic Messages API, so the default provider works. Set `ANTHROPIC_API_KEY` to the Zen key and `ANTHROPIC_BASE_URL=https://opencode.ai/zen/v1`. The pipeline notices the gateway and skips the beta-only refusal fallback.
+
+**Open models on Zen or Go** (MiniMax, GLM, Kimi, DeepSeek, Qwen, Muse Spark) use OpenAI-style endpoints:
+
+```bash
+SIFT_PROVIDER=chat        # or "responses" for Muse Spark, GPT and Grok
+SIFT_MODEL=minimax-m3
+OPENAI_API_KEY=<Zen or Go key>
+OPENAI_BASE_URL=https://opencode.ai/zen/v1
+```
+
+The pipeline asks for native JSON-schema output first and falls back to a JSON-only prompt with validation, because gateways and open models vary in what they accept. Expect more retries and occasionally weaker summaries than with Claude; the triage prompt is the part that suffers most on small models.
+
+Note on Go: its terms say it is meant for coding agents and that traffic is monitored. Sift sends a clear user agent and the `x-opencode-session` header as asked, and a day's run is about 65 short requests, but it is still outside the stated purpose. Zen pay-as-you-go has no such restriction.
+
+In GitHub Actions, add `SIFT_PROVIDER`, `SIFT_MODEL` and `OPENAI_BASE_URL` as repository variables and `OPENAI_API_KEY` as a secret.

@@ -38,7 +38,7 @@ const log = (...a) => console.log(`[${new Date().toISOString().slice(11, 19)}]`,
 let claude = null;
 if (!DRY) {
   claude = await import('./lib/claude.mjs');
-  log(`model: ${claude.MODEL}`);
+  log(`provider: ${claude.PROVIDER}  model: ${claude.MODEL}`);
 } else {
   log('DRY RUN: no Claude calls. Stories will carry scored: false and feed snippets as bodies.');
 }
