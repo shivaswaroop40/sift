@@ -50,13 +50,31 @@ Two cases, chosen with `SIFT_PROVIDER`.
 
 **Claude models on Zen** speak the Anthropic Messages API, so the default provider works. Set `ANTHROPIC_API_KEY` to the Zen key and `ANTHROPIC_BASE_URL=https://opencode.ai/zen/v1`. The pipeline notices the gateway and skips the beta-only refusal fallback.
 
-**Open models on Zen or Go** (MiniMax, GLM, Kimi, DeepSeek, Qwen, Muse Spark) use OpenAI-style endpoints:
+**Open models on Zen or Go** sit on three different endpoints, and the model IDs differ between Zen and Go. From OpenCode's docs:
+
+| Model | Go model ID | Endpoint | Settings |
+|---|---|---|---|
+| Muse Spark 1.3 | `muse-spark-1.3-contributor` | responses | `SIFT_PROVIDER=responses` |
+| GPT 5.6 Luna, Grok 4.6 | `gpt-5.6-luna`, `grok-4.6` | responses | `SIFT_PROVIDER=responses` |
+| MiniMax M3, Qwen 3.8 Max | `minimax-m3`, `qwen3.8-max` | messages | `SIFT_PROVIDER=anthropic` + `ANTHROPIC_BASE_URL` + `ANTHROPIC_API_KEY` |
+| GLM 5.3, Kimi K3, DeepSeek V4 | `glm-5.3`, `kimi-k3`, `deepseek-v4-pro` | chat/completions | `SIFT_PROVIDER=chat` |
+
+Example for a Go key and Muse Spark:
 
 ```bash
-SIFT_PROVIDER=chat        # or "responses" for Muse Spark, GPT and Grok
+SIFT_PROVIDER=responses
+SIFT_MODEL=muse-spark-1.3-contributor
+OPENAI_API_KEY=<Go key>
+OPENAI_BASE_URL=https://opencode.ai/zen/go/v1   # Zen keys use https://opencode.ai/zen/v1
+```
+
+Example for a Go key and MiniMax M3, which speaks the Messages API:
+
+```bash
+SIFT_PROVIDER=anthropic
 SIFT_MODEL=minimax-m3
-OPENAI_API_KEY=<Zen or Go key>
-OPENAI_BASE_URL=https://opencode.ai/zen/v1
+ANTHROPIC_API_KEY=<Go key>
+ANTHROPIC_BASE_URL=https://opencode.ai/zen/go/v1
 ```
 
 The pipeline asks for native JSON-schema output first and falls back to a JSON-only prompt with validation, because gateways and open models vary in what they accept. Expect more retries and occasionally weaker summaries than with Claude; the triage prompt is the part that suffers most on small models.

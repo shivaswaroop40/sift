@@ -26,6 +26,30 @@ async function structured({ system, user, schema, effort = 'medium', maxTokens =
     return fn({ model: MODEL, system, user, schema, maxTokens });
   }
   const c = getClient();
+  // Non-Claude models behind a Messages-compatible gateway (MiniMax, Qwen on OpenCode) do not support
+  // output_config, so ask for JSON in the prompt and validate it ourselves.
+  if (VIA_GATEWAY && !/^claude/.test(MODEL)) {
+    const { extractJson, jsonSchemaFor } = await import('./openai-compat.mjs');
+    let lastErr;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const t0 = Date.now();
+      const res = await c.messages.create({
+        model: MODEL,
+        max_tokens: maxTokens,
+        system: `${system}\n\nRespond with a single JSON object matching this schema. No prose, no code fence.\nSchema:\n${JSON.stringify(jsonSchemaFor(schema))}`,
+        messages: [{ role: 'user', content: user }],
+      });
+      const text = res.content.filter((b) => b.type === 'text').map((b) => b.text).join('');
+      console.log(`      → messages ${MODEL} ${res.stop_reason} ${res.usage?.input_tokens ?? '?'}in/${res.usage?.output_tokens ?? '?'}out in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
+      try {
+        return { data: schema.parse(extractJson(text)), usage: res.usage, model: res.model || MODEL };
+      } catch (err) {
+        lastErr = err;
+        console.log(`      ! invalid JSON from model (attempt ${attempt + 1}): ${String(err.message).slice(0, 120)}`);
+      }
+    }
+    throw lastErr;
+  }
   const params = {
     model: MODEL,
     max_tokens: maxTokens,
@@ -98,7 +122,7 @@ ${VOICE}`;
 }
 
 /** Score a batch of candidates. Returns a Map of id -> triage result. */
-export async function triage(domain, candidates, { chunkSize = 40 } = {}) {
+export async function triage(domain, candidates, { chunkSize = PROVIDER === 'anthropic' && !VIA_GATEWAY ? 40 : 25 } = {}) {
   const schema = triageSchema(domain.sections);
   const system = triageSystem(domain);
   const out = new Map();

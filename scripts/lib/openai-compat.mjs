@@ -5,25 +5,34 @@ import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 const BASE = (process.env.OPENAI_BASE_URL || 'https://opencode.ai/zen/v1').replace(/\/$/, '');
 const KEY = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY;
 
-function jsonSchemaFor(schema) {
+export function jsonSchemaFor(schema) {
   // Reuse the SDK's zod→JSON Schema conversion so both providers see the same schema.
   return zodOutputFormat(schema).schema;
 }
 
-function extractJson(text) {
+export function extractJson(text) {
   // Open models sometimes wrap JSON in a code fence or add a sentence. Take the outermost object.
   const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/);
   const body = fenced ? fenced[1] : text;
   const start = body.indexOf('{');
   const end = body.lastIndexOf('}');
   if (start < 0 || end < 0) throw new Error('no JSON object in response');
-  return JSON.parse(body.slice(start, end + 1));
+  const raw = body.slice(start, end + 1);
+  try {
+    return JSON.parse(raw);
+  } catch (err) {
+    // Common small-model slips: a key missing its closing quote ("utility:6), trailing commas.
+    const repaired = raw.replace(/"([A-Za-z_][A-Za-z0-9_]*):(?=\s*(?:-?\d|true|false|null|"|\[|\{))/g, '"$1":').replace(/,\s*([}\]])/g, '$1');
+    return JSON.parse(repaired);
+  }
 }
 
 // OpenCode asks clients to identify themselves and send a session id so it can optimise caching.
 const SESSION = `sift-${new Date().toISOString().slice(0, 10)}-${Math.random().toString(36).slice(2, 8)}`;
 
 async function post(path, body) {
+  const t0 = Date.now();
+  process.stdout.write(`      → ${path} ${body.model} … `);
   const res = await fetch(`${BASE}${path}`, {
     method: 'POST',
     headers: {
@@ -33,8 +42,10 @@ async function post(path, body) {
       'x-opencode-session': SESSION,
     },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(Number(process.env.SIFT_TIMEOUT_MS || 180000)),
   });
   const text = await res.text();
+  console.log(`${res.status} in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
   if (!res.ok) throw new Error(`${path} ${res.status}: ${text.slice(0, 300)}`);
   return JSON.parse(text);
 }
