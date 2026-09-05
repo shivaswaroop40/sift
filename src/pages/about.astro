@@ -3,23 +3,31 @@ import Base from '../layouts/Base.astro';
 import { SITE } from '../../site.config';
 import { DOMAINS } from '../lib/domains';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const site = String(Astro.site ?? '').replace(/\/$/, '');
 ---
 <Base title={`About ${SITE.name}`} current="about">
-  <div class="prose">
-    <h1>About</h1>
-    <p>{SITE.description}</p>
-    <p>Every morning a script reads the feeds below, drops anything it has seen before, and asks a language model to score each new item for depth, novelty and usefulness to a specific reader. The top dozen get a short summary and a line on why the original is worth opening. Everything links out. Nothing here is original reporting, and the model can be wrong, so read the source before you repeat a claim.</p>
-    <h2>Subscribe</h2>
-    <p>Each field has its own RSS feed, which works with NetNewsWire, Reeder, Feedly and any other reader, and gives you a home screen widget on iPhone for free:</p>
-    <ul>
-      {DOMAINS.map((d) => <li><a href={`${base}/${d.slug}/rss.xml`}>{d.name}</a> <code>{`${Astro.site ?? ''}${base}/${d.slug}/rss.xml`.replace(/\/\/+/g, '/').replace(':/', '://')}</code></li>)}
+  <section class="section">
+    <p class="kicker">About</p>
+    <div class="prose">
+      <p>{SITE.description}</p>
+      <p>Every morning a script reads the feeds below, drops anything it has seen before, and asks a language model to score each new item for depth, novelty and usefulness to a specific reader. The top dozen get a short summary and a line on why the original is worth opening. Everything links out. The model can be wrong, so read the source before you repeat a claim.</p>
+    </div>
+  </section>
+  <section class="section">
+    <p class="kicker">Subscribe</p>
+    <p class="section-note">One RSS feed per field. Works with NetNewsWire, Reeder, Feedly and any other reader, and gives you an iPhone home screen widget for free. Or open a field in Safari and use Share, then Add to Home Screen.</p>
+    <ul class="arrow-list">
+      {DOMAINS.map((d) => <li><a href={`${base}/${d.slug}/rss.xml`}>{d.name}</a> <code>{`${site}${base}/${d.slug}/rss.xml`}</code></li>)}
     </ul>
-    <p>On iPhone, open a field and use Share → Add to Home Screen to get it as an app.</p>
-    {DOMAINS.map((d) => (
-      <>
-        <h2>{d.name} sources</h2>
-        <ul>{d.feeds.map((f) => <li><a href={f.url}>{f.name}</a> <small>({f.kind})</small></li>)}</ul>
-      </>
-    ))}
-  </div>
+  </section>
+  {DOMAINS.map((d) => (
+    <section class="section">
+      <p class="kicker">{d.name} <span>· {d.feeds.length} sources</span></p>
+      <ul class="row-list">
+        {d.feeds.map((f) => (
+          <li><strong><a href={f.url}>{f.name}</a></strong><span class="when">{f.kind}</span></li>
+        ))}
+      </ul>
+    </section>
+  ))}
 </Base>

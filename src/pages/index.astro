@@ -1,24 +1,33 @@
 ---
 import Base from '../layouts/Base.astro';
 import { SITE } from '../../site.config';
-import { DOMAINS, editionsFor } from '../lib/domains';
+import { DOMAINS, editionsFor, fmtDate } from '../lib/domains';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const latest = await Promise.all(DOMAINS.map(async (d) => [d.slug, (await editionsFor(d.slug))[0]?.[0] ?? null] as const));
+const latest = await Promise.all(DOMAINS.map(async (d) => [d.slug, (await editionsFor(d.slug))[0] ?? null] as const));
 const latestMap = Object.fromEntries(latest);
 ---
 <Base title={`${SITE.name}. ${SITE.tagline}`}>
-  <script is:inline set:html={`(function(){try{var d=localStorage.getItem('sift-domain');if(d&&!location.hash){location.replace('${base}/'+d+'/');}}catch(e){}})();`}></script>
-  <div class="prose">
-    <h1>{SITE.tagline}</h1>
-    <p>{SITE.description}</p>
-    <p>Pick a field. The site remembers your choice and opens there next time.</p>
-  </div>
-  <div class="domains">
-    {DOMAINS.map((d) => (
-      <a href={`${base}/${d.slug}/`} style={`--card-accent:${d.accent}`}>
-        <b>{d.name}</b>
-        <span>{d.short}{latestMap[d.slug] ? ` · latest ${latestMap[d.slug]}` : ' · no editions yet'}</span>
-      </a>
-    ))}
-  </div>
+  <script is:inline set:html={`try{var d=localStorage.getItem('sift-domain');if(d&&!location.hash){location.replace('${base}/'+d+'/');}}catch(e){}`}></script>
+  <section class="section">
+    <p class="kicker">Fields</p>
+    <div class="prose">
+      <p>{SITE.description}</p>
+      <p>Pick a field. The site remembers it and opens there next time. Each field has its own RSS feed for any reader, and adds to an iPhone home screen as an app.</p>
+    </div>
+  </section>
+  <section class="section">
+    {DOMAINS.map((d) => {
+      const ed = latestMap[d.slug];
+      return (
+        <article class="entry">
+          <div class="entry-head">
+            <h3><a href={`${base}/${d.slug}/`}>{d.name}</a></h3>
+            <p class="entry-period">{ed ? fmtDate(ed[0]) : 'no editions yet'}</p>
+          </div>
+          <p class="entry-org">{d.feeds.length} sources{ed ? ` · ${ed[1].length} stories today` : ''}</p>
+          <div class="entry-body"><p>{d.short}.{ed?.[1][0] ? ` Leading today: ${ed[1][0].data.title}` : ''}</p></div>
+        </article>
+      );
+    })}
+  </section>
 </Base>

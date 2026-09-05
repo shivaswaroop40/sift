@@ -52,7 +52,7 @@ for (const slug of domains) {
   const page = path.join(DIST, slug, 'index.html');
   if (!fs.existsSync(page)) { fail(`${slug}: no index.html`); continue; }
   const html = fs.readFileSync(page, 'utf8');
-  const stories = (html.match(/class="story/g) || []).length;
+  const stories = (html.match(/<article class="entry/g) || []).length;
   if (stories === 0) fail(`${slug}: front page has no stories`);
   for (const f of ['rss.xml', 'latest.json']) {
     const p = path.join(DIST, slug, f);

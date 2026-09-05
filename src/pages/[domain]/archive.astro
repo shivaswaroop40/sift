@@ -11,14 +11,19 @@ const editions = await editionsFor(domain.slug);
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 <Base title={`${SITE.name} · ${domain.name} archive`} domain={domain} current="archive">
-  <header class="edition-head"><h1>{domain.name} archive</h1><span class="meta">{editions.length} editions</span></header>
-  <ul class="list">
-    {editions.map(([date, stories]) => (
-      <li>
-        <span class="date">{date}</span>
-        <a href={`${base}/${domain.slug}/${date}/`}>{fmtDate(date)}</a>
-        <span class="count">{stories.length} stories · lead: {stories[0]?.data.title}</span>
-      </li>
-    ))}
-  </ul>
+  <section class="section">
+    <p class="kicker">Archive <span>· {editions.length} {editions.length === 1 ? 'edition' : 'editions'}</span></p>
+    <h2 class="section-title">{domain.name}</h2>
+    <ul class="row-list">
+      {editions.map(([date, stories]) => (
+        <li>
+          <div>
+            <strong><a href={`${base}/${domain.slug}/${date}/`}>{fmtDate(date)}</a></strong>
+            <span class="sub">{stories.length} stories · {stories[0]?.data.title}</span>
+          </div>
+          <span class="when">{date}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
 </Base>
