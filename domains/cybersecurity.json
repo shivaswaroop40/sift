@@ -1,0 +1,32 @@
+{
+  "slug": "cybersecurity",
+  "name": "Cybersecurity",
+  "short": "Threats, vulnerabilities, defence and research",
+  "accent": "#b3261e",
+  "accentDark": "#ff7a6e",
+  "audience": "A security engineer or platform engineer responsible for defending production systems, who needs to know about actively exploited vulnerabilities, novel attack techniques, notable incidents, and research that changes how defences are built.",
+  "criteria": "Reward: actively exploited or high-impact vulnerabilities with technical detail, original threat research and malware analysis, incident write-ups with root causes, new defensive techniques, and policy changes with operational consequences. Rank an advisory higher when exploitation is confirmed. Penalise: vendor press releases, product announcements, recycled coverage of the same CVE without new information, fear-driven headlines, and generic awareness content.",
+  "sections": ["vulnerabilities", "incidents", "threat-research", "defence", "cloud-and-supply-chain", "policy", "papers"],
+  "perDay": 12,
+  "feeds": [
+    { "name": "The Hacker News", "url": "https://feeds.feedburner.com/TheHackersNews", "kind": "news" },
+    { "name": "BleepingComputer", "url": "https://www.bleepingcomputer.com/feed/", "kind": "news" },
+    { "name": "Krebs on Security", "url": "https://krebsonsecurity.com/feed/", "kind": "news", "windowHours": 168 },
+    { "name": "The Record", "url": "https://therecord.media/feed", "kind": "news" },
+    { "name": "Dark Reading", "url": "https://www.darkreading.com/rss.xml", "kind": "news" },
+    { "name": "SecurityWeek", "url": "https://www.securityweek.com/feed/", "kind": "news" },
+    { "name": "Help Net Security", "url": "https://www.helpnetsecurity.com/feed/", "kind": "news" },
+    { "name": "CISA Advisories", "url": "https://www.cisa.gov/cybersecurity-advisories/all.xml", "kind": "advisory" },
+    { "name": "CISA News", "url": "https://www.cisa.gov/news.xml", "kind": "advisory" },
+    { "name": "SANS ISC", "url": "https://isc.sans.edu/rssfeed_full.xml", "kind": "blog" },
+    { "name": "Schneier on Security", "url": "https://www.schneier.com/feed/atom/", "kind": "blog" },
+    { "name": "Project Zero", "url": "https://googleprojectzero.blogspot.com/feeds/posts/default", "kind": "research", "windowHours": 336 },
+    { "name": "Cisco Talos", "url": "https://blog.talosintelligence.com/rss/", "kind": "research", "windowHours": 168 },
+    { "name": "Unit 42", "url": "https://unit42.paloaltonetworks.com/feed/", "kind": "research", "windowHours": 168 },
+    { "name": "Check Point Research", "url": "https://research.checkpoint.com/feed/", "kind": "research", "windowHours": 168 },
+    { "name": "Securelist", "url": "https://feeds.feedburner.com/Securelist", "kind": "research", "windowHours": 168 },
+    { "name": "PortSwigger Research", "url": "https://portswigger.net/research/rss", "kind": "research", "windowHours": 336 },
+    { "name": "Wiz Blog", "url": "https://www.wiz.io/feed/rss.xml", "kind": "research", "windowHours": 168 },
+    { "name": "arXiv cs.CR", "url": "https://export.arxiv.org/rss/cs.CR", "kind": "paper", "abstractInFeed": true }
+  ]
+}

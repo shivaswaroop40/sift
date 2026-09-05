@@ -1,0 +1,24 @@
+{
+  "slug": "travel",
+  "name": "Travel",
+  "short": "Places, routes, points and the business of getting there",
+  "accent": "#1e7d5a",
+  "accentDark": "#5fd3a3",
+  "audience": "An independent traveller who plans their own trips, flies often enough to care about routes, fares and loyalty programmes, prefers places with a story over resorts, and wants to know about changes that affect how and where they can go.",
+  "criteria": "Reward: changes to entry rules, visas, schengen and ETIAS style systems, new routes and airline or rail changes that open up places, honest destination pieces with specifics, well-researched history or oddity pieces about places, and analysis of the travel industry with consequences for travellers. Rank official travel advisories higher when the level changes. Penalise: credit card sign-up bonus promotion, sponsored hotel reviews, generic top-ten lists, luxury coverage with no practical use, and press-release rewrites.",
+  "sections": ["destinations", "flights-and-routes", "rules-and-visas", "rail-and-overland", "points-and-fares", "industry", "oddities"],
+  "perDay": 10,
+  "feeds": [
+    { "name": "The Guardian Travel", "url": "https://www.theguardian.com/travel/rss", "kind": "news" },
+    { "name": "New York Times Travel", "url": "https://rss.nytimes.com/services/xml/rss/nyt/Travel.xml", "kind": "news" },
+    { "name": "Condé Nast Traveler", "url": "https://www.cntraveler.com/feed/rss", "kind": "news" },
+    { "name": "Skift", "url": "https://skift.com/feed/", "kind": "news" },
+    { "name": "Simple Flying", "url": "https://simpleflying.com/feed/", "kind": "news" },
+    { "name": "Atlas Obscura", "url": "https://www.atlasobscura.com/feeds/latest", "kind": "blog" },
+    { "name": "One Mile at a Time", "url": "https://onemileatatime.com/feed/", "kind": "blog" },
+    { "name": "View from the Wing", "url": "https://viewfromthewing.com/feed/", "kind": "blog" },
+    { "name": "The Points Guy", "url": "https://thepointsguy.com/feed/", "kind": "blog" },
+    { "name": "Nomadic Matt", "url": "https://www.nomadicmatt.com/feed/", "kind": "blog", "windowHours": 168 },
+    { "name": "US State Dept Advisories", "url": "https://travel.state.gov/_res/rss/TAsTWs.xml", "kind": "advisory" }
+  ]
+}

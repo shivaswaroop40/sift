@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import { SITE } from '../../../site.config';
+import { DOMAINS, editionsFor, fmtDate } from '../../lib/domains';
+
+export async function getStaticPaths() {
+  return DOMAINS.map((d) => ({ params: { domain: d.slug }, props: { domain: d } }));
+}
+const { domain } = Astro.props;
+const editions = await editionsFor(domain.slug);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<Base title={`${SITE.name} · ${domain.name} archive`} domain={domain} current="archive">
+  <header class="edition-head"><h1>{domain.name} archive</h1><span class="meta">{editions.length} editions</span></header>
+  <ul class="list">
+    {editions.map(([date, stories]) => (
+      <li>
+        <span class="date">{date}</span>
+        <a href={`${base}/${domain.slug}/${date}/`}>{fmtDate(date)}</a>
+        <span class="count">{stories.length} stories · lead: {stories[0]?.data.title}</span>
+      </li>
+    ))}
+  </ul>
+</Base>

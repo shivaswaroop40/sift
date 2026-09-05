@@ -1,0 +1,94 @@
+{
+  "domain": "chemical-engineering",
+  "date": "2026-09-05",
+  "generated_at": "2026-09-05T09:02:05.399Z",
+  "dry_run": true,
+  "model": null,
+  "candidates": 404,
+  "kept": 12,
+  "feeds": [
+    {
+      "name": "The Chemical Engineer",
+      "ok": true,
+      "items": 3
+    },
+    {
+      "name": "Chemical Engineering Magazine",
+      "ok": true,
+      "items": 3
+    },
+    {
+      "name": "ICIS",
+      "ok": true,
+      "items": 0
+    },
+    {
+      "name": "Process Worldwide",
+      "ok": true,
+      "items": 1
+    },
+    {
+      "name": "Chemical Industry Journal",
+      "ok": true,
+      "items": 4
+    },
+    {
+      "name": "AIChE",
+      "ok": true,
+      "items": 2
+    },
+    {
+      "name": "ScienceDaily Chemistry",
+      "ok": true,
+      "items": 0
+    },
+    {
+      "name": "Phys.org Chemistry",
+      "ok": true,
+      "items": 11
+    },
+    {
+      "name": "Nature Chemical Engineering",
+      "ok": true,
+      "items": 2
+    },
+    {
+      "name": "AIChE Journal",
+      "ok": true,
+      "items": 78
+    },
+    {
+      "name": "Chemical Engineering Science",
+      "ok": true,
+      "items": 100
+    },
+    {
+      "name": "Chemical Engineering Journal",
+      "ok": true,
+      "items": 100
+    },
+    {
+      "name": "Chem Eng Research and Design",
+      "ok": true,
+      "items": 100
+    },
+    {
+      "name": "I&EC Research",
+      "ok": false,
+      "items": 0,
+      "error": "Status code 403"
+    },
+    {
+      "name": "Reaction Chemistry & Engineering",
+      "ok": false,
+      "items": 0,
+      "error": "Status code 403"
+    },
+    {
+      "name": "arXiv physics.chem-ph",
+      "ok": true,
+      "items": 0
+    }
+  ],
+  "triage_usage": null
+}

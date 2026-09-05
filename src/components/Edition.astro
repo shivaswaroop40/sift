@@ -1,0 +1,17 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Story from './Story.astro';
+import { fmtDate, editionMeta, type Domain } from '../lib/domains';
+
+interface Props { domain: Domain; date: string; stories: CollectionEntry<'stories'>[]; isLatest: boolean }
+const { domain, date, stories, isLatest } = Astro.props;
+const meta = await editionMeta(domain.slug, date);
+---
+<header class="edition-head">
+  <h1>{isLatest ? 'Today' : 'Edition'} in {domain.name}</h1>
+  <span class="meta">{fmtDate(date)}{meta && <> · <b>{meta.kept}</b> of {meta.candidates} candidates</>}</span>
+</header>
+{meta?.dry_run && (
+  <p class="notice">This edition was built without model scoring. Rankings are a placeholder and bodies are feed excerpts. Set an API key and run the ingest to get real editions.</p>
+)}
+{stories.map((s, i) => <Story entry={s} lead={i === 0} />)}

@@ -1,0 +1,76 @@
+name: Daily edition
+
+on:
+  schedule:
+    # 04:40 UTC every day. Feeds have settled, and it lands before a European breakfast.
+    - cron: "40 4 * * *"
+  workflow_dispatch:
+    inputs:
+      domain:
+        description: "Only this domain slug (blank = all)"
+        required: false
+      force:
+        description: "Rebuild today's edition even if it exists"
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+    paths-ignore: ["content/**", "data/**"]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: daily
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Build today's editions
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          ARGS=""
+          [ -n "${{ inputs.domain }}" ] && ARGS="$ARGS --domain ${{ inputs.domain }}"
+          [ "${{ inputs.force }}" = "true" ] && ARGS="$ARGS --force"
+          node scripts/ingest.mjs $ARGS
+      - name: Commit editions
+        run: |
+          git config user.name "sift-bot"
+          git config user.email "sift-bot@users.noreply.github.com"
+          git add content data
+          git diff --cached --quiet && echo "no changes" || git commit -m "edition: $(date -u +%F)"
+          git push
+
+  deploy:
+    needs: [ingest]
+    if: always() && (needs.ingest.result == 'success' || github.event_name == 'push')
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Build site
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+          BASE_PATH: ${{ vars.BASE_PATH }}
+        run: npm run build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: dist }
+      - id: deployment
+        uses: actions/deploy-pages@v4

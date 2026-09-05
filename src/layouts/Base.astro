@@ -1,0 +1,91 @@
+---
+import '../styles/global.css';
+import { SITE } from '../../site.config';
+import { DOMAINS, type Domain } from '../lib/domains';
+
+interface Props {
+  title: string;
+  description?: string;
+  domain?: Domain;
+  current?: 'latest' | 'archive' | 'about';
+}
+const { title, description = SITE.description, domain, current } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const accent = domain?.accent ?? '#1f5fbf';
+const accentDark = domain?.accentDark ?? '#6ea1ff';
+const rssHref = domain ? `${base}/${domain.slug}/rss.xml` : null;
+---
+<!doctype html>
+<html lang="en" data-domain={domain?.slug ?? ''}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content={accent} />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content={domain ? `${SITE.name} ${domain.name}` : SITE.name} />
+    <link rel="manifest" href={`${base}/manifest.webmanifest`} />
+    <link rel="icon" href={`${base}/icons/icon.svg`} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={`${base}/icons/apple-touch-icon.png`} />
+    {rssHref && <link rel="alternate" type="application/rss+xml" title={`${SITE.name} ${domain!.name}`} href={rssHref} />}
+    <style set:html={`:root{--accent:${accent}} @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--accent:${accentDark}}} :root[data-theme="dark"]{--accent:${accentDark}}`}></style>
+    <script is:inline>
+      // Theme before paint, so there is no flash. Remember the domain for the home redirect.
+      (function () {
+        try {
+          var t = localStorage.getItem('sift-theme');
+          if (t) document.documentElement.dataset.theme = t;
+          var d = document.documentElement.dataset.domain;
+          if (d) localStorage.setItem('sift-domain', d);
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="masthead">
+        <a class="brand" href={`${base}/`}>{SITE.name}<small>{SITE.tagline}</small></a>
+        <span class="spacer"></span>
+        <div class="controls">
+        <label class="visually-hidden" for="domain-select" style="position:absolute;left:-9999px">Domain</label>
+        <select id="domain-select" class="domain-select" aria-label="Choose a domain">
+          {DOMAINS.map((d) => (
+            <option value={`${base}/${d.slug}/`} selected={d.slug === domain?.slug}>{d.name}</option>
+          ))}
+        </select>
+        <button class="iconbtn" id="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">◐</button>
+        </div>
+      </header>
+      {domain && (
+        <nav class="nav">
+          <a href={`${base}/${domain.slug}/`} aria-current={current === 'latest' ? 'page' : undefined}>Today</a>
+          <a href={`${base}/${domain.slug}/archive/`} aria-current={current === 'archive' ? 'page' : undefined}>Archive</a>
+          <a href={`${base}/about/`} aria-current={current === 'about' ? 'page' : undefined}>About</a>
+          <a class="rss" href={rssHref}>RSS ↗</a>
+        </nav>
+      )}
+      <main>
+        <slot />
+      </main>
+      <footer class="colophon">
+        {SITE.name} is a daily digest. Stories are scored and summarised by a language model from public feeds and link to their sources. Nothing here is original reporting.
+        {domain && <> Feeds for {domain.name} are listed on the <a href={`${base}/about/`}>about page</a>.</>}
+        <br />Built by {SITE.author}.
+      </footer>
+    </div>
+    <script is:inline>
+      document.getElementById('domain-select').addEventListener('change', function (e) {
+        location.href = e.target.value;
+      });
+      document.getElementById('theme-toggle').addEventListener('click', function () {
+        var root = document.documentElement;
+        var dark = root.dataset.theme === 'dark' || (!root.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches);
+        var next = dark ? 'light' : 'dark';
+        root.dataset.theme = next;
+        try { localStorage.setItem('sift-theme', next); } catch (e) {}
+      });
+    </script>
+  </body>
+</html>

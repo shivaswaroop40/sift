@@ -1,0 +1,29 @@
+{
+  "slug": "chemical-engineering",
+  "name": "Chemical Engineering",
+  "short": "Process industry news and the research behind it",
+  "accent": "#b8641b",
+  "accentDark": "#ffa657",
+  "audience": "A practising chemical engineer who works on process design and operations, follows separations, reaction engineering, process safety, electrochemistry and the energy transition, and wants both what the industry is doing and what the literature has just found.",
+  "criteria": "Reward: plant incidents and safety findings with root causes, major capacity or technology decisions in chemicals, refining, hydrogen, CCS and batteries, regulatory changes with process consequences, and papers whose result changes a design choice, a model, or a process route. For papers, rank by how much a working engineer could use the result, not by journal prestige. Penalise: earnings coverage without operational detail, incremental papers with no clear application, press releases about partnerships, and generic sustainability messaging.",
+  "sections": ["process-safety", "industry", "separations", "reaction-engineering", "energy-transition", "materials", "modelling-and-control", "papers"],
+  "perDay": 12,
+  "feeds": [
+    { "name": "The Chemical Engineer", "url": "https://www.thechemicalengineer.com/rss/", "kind": "news" },
+    { "name": "Chemical Engineering Magazine", "url": "https://www.chemengonline.com/feed/", "kind": "news" },
+    { "name": "ICIS", "url": "https://www.icis.com/explore/feed/", "kind": "news" },
+    { "name": "Process Worldwide", "url": "https://www.process-worldwide.com/rss/news.xml", "kind": "news" },
+    { "name": "Chemical Industry Journal", "url": "https://www.chemicalindustryjournal.co.uk/feed", "kind": "news", "windowHours": 168 },
+    { "name": "AIChE", "url": "https://www.aiche.org/rss.xml", "kind": "news", "windowHours": 168 },
+    { "name": "ScienceDaily Chemistry", "url": "https://www.sciencedaily.com/rss/matter_energy/chemistry.xml", "kind": "news" },
+    { "name": "Phys.org Chemistry", "url": "https://phys.org/rss-feed/chemistry-news/", "kind": "news" },
+    { "name": "Nature Chemical Engineering", "url": "https://www.nature.com/natchemeng.rss", "kind": "paper", "windowHours": 336, "abstractInFeed": true },
+    { "name": "AIChE Journal", "url": "https://aiche.onlinelibrary.wiley.com/feed/15475905/most-recent", "kind": "paper", "windowHours": 336, "abstractInFeed": true },
+    { "name": "Chemical Engineering Science", "url": "https://rss.sciencedirect.com/publication/science/00092509", "kind": "paper", "windowHours": 336, "abstractInFeed": true },
+    { "name": "Chemical Engineering Journal", "url": "https://rss.sciencedirect.com/publication/science/13858947", "kind": "paper", "windowHours": 336, "abstractInFeed": true },
+    { "name": "Chem Eng Research and Design", "url": "https://rss.sciencedirect.com/publication/science/02638762", "kind": "paper", "windowHours": 336, "abstractInFeed": true },
+    { "name": "I&EC Research", "url": "https://pubs.acs.org/action/showFeed?type=etoc&feed=rss&jc=iecred", "kind": "paper", "windowHours": 336, "abstractInFeed": true },
+    { "name": "Reaction Chemistry & Engineering", "url": "https://pubs.rsc.org/en/journals/rss?journalcode=re", "kind": "paper", "windowHours": 336, "abstractInFeed": true },
+    { "name": "arXiv physics.chem-ph", "url": "https://export.arxiv.org/rss/physics.chem-ph", "kind": "paper", "abstractInFeed": true }
+  ]
+}

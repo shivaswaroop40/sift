@@ -1,0 +1,32 @@
+{
+  "slug": "tech",
+  "name": "Tech",
+  "short": "Software, systems and the industry around them",
+  "accent": "#1f5fbf",
+  "accentDark": "#6ea1ff",
+  "audience": "A senior software or platform engineer who builds and runs distributed systems, cares about Kubernetes, databases, observability, developer tooling and the economics of the industry, and is tired of product announcements dressed up as news.",
+  "criteria": "Reward: engineering write-ups with real mechanisms and numbers, post-mortems, well-argued essays on how software is built, papers with a result that changes practice, meaningful open-source releases, and industry news with consequences for people who build software. Penalise: product launches without technical substance, funding rounds, listicles, opinion pieces that restate common knowledge, consumer gadget reviews, and anything that is mainly marketing.",
+  "sections": ["systems", "infrastructure", "languages-and-tools", "ai-and-ml", "security", "industry", "papers", "culture"],
+  "perDay": 12,
+  "feeds": [
+    { "name": "Hacker News (100+ points)", "url": "https://hnrss.org/frontpage?points=100", "kind": "community" },
+    { "name": "Lobsters", "url": "https://lobste.rs/rss", "kind": "community" },
+    { "name": "LWN", "url": "https://lwn.net/headlines/rss", "kind": "news" },
+    { "name": "The Register", "url": "https://www.theregister.com/headlines.atom", "kind": "news" },
+    { "name": "Ars Technica", "url": "https://arstechnica.com/feed/", "kind": "news" },
+    { "name": "InfoQ", "url": "https://www.infoq.com/feed/", "kind": "news" },
+    { "name": "TechCrunch", "url": "https://techcrunch.com/feed/", "kind": "news" },
+    { "name": "Simon Willison", "url": "https://simonwillison.net/atom/everything/", "kind": "blog" },
+    { "name": "Martin Fowler", "url": "https://martinfowler.com/feed.atom", "kind": "blog", "windowHours": 168 },
+    { "name": "The Pragmatic Engineer", "url": "https://blog.pragmaticengineer.com/rss/", "kind": "blog", "windowHours": 168 },
+    { "name": "Cloudflare Blog", "url": "https://blog.cloudflare.com/rss/", "kind": "blog" },
+    { "name": "Meta Engineering", "url": "https://engineering.fb.com/feed/", "kind": "blog", "windowHours": 168 },
+    { "name": "Netflix Tech Blog", "url": "https://netflixtechblog.com/feed", "kind": "blog", "windowHours": 168 },
+    { "name": "GitHub Blog", "url": "https://github.blog/feed/", "kind": "blog" },
+    { "name": "AWS News", "url": "https://aws.amazon.com/blogs/aws/feed/", "kind": "blog" },
+    { "name": "Kubernetes Blog", "url": "https://kubernetes.io/feed.xml", "kind": "blog", "windowHours": 168 },
+    { "name": "CNCF", "url": "https://www.cncf.io/feed/", "kind": "blog", "windowHours": 168 },
+    { "name": "arXiv cs.SE", "url": "https://export.arxiv.org/rss/cs.SE", "kind": "paper", "abstractInFeed": true },
+    { "name": "arXiv cs.DC", "url": "https://export.arxiv.org/rss/cs.DC", "kind": "paper", "abstractInFeed": true }
+  ]
+}

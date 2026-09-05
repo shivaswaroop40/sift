@@ -1,0 +1,20 @@
+---
+import Base from '../../layouts/Base.astro';
+import Edition from '../../components/Edition.astro';
+import { SITE } from '../../../site.config';
+import { DOMAINS, editionsFor } from '../../lib/domains';
+
+export async function getStaticPaths() {
+  return DOMAINS.map((d) => ({ params: { domain: d.slug }, props: { domain: d } }));
+}
+const { domain } = Astro.props;
+const editions = await editionsFor(domain.slug);
+const [date, stories] = editions[0] ?? [null, []];
+---
+<Base title={`${SITE.name} · ${domain.name}`} description={`${domain.short}. ${SITE.description}`} domain={domain} current="latest">
+  {date ? (
+    <Edition domain={domain} date={date} stories={stories} isLatest={true} />
+  ) : (
+    <div class="prose"><h1>No editions yet</h1><p>Run <code>npm run ingest -- --domain {domain.slug}</code> to build the first one.</p></div>
+  )}
+</Base>

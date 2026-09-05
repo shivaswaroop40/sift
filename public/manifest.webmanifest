@@ -1,0 +1,14 @@
+{
+  "name": "Sift",
+  "short_name": "Sift",
+  "description": "A daily digest per field. Fewer things, worth reading.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f2ea",
+  "theme_color": "#1b1a17",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icons/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

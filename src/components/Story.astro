@@ -1,0 +1,37 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import { sectionLabel } from '../lib/domains';
+
+interface Props { entry: CollectionEntry<'stories'>; lead?: boolean }
+const { entry, lead = false } = Astro.props;
+const s = entry.data;
+const { Content } = await render(entry);
+const host = (() => { try { return new URL(s.url).hostname.replace(/^www\./, ''); } catch { return ''; } })();
+const pct = (n: number) => `${Math.round((n / 10) * 100)}%`;
+---
+<article class:list={['story', { lead }]} id={s.id}>
+  <div class="rank">{s.rank}</div>
+  <div>
+    <div class="kicker">
+      <span>{sectionLabel(s.section)}</span>
+      <span class="src">{s.source}{host && s.source.toLowerCase() !== host ? ` · ${host}` : ''}</span>
+    </div>
+    <h2><a href={s.url} rel="noopener">{s.title}</a></h2>
+    {s.why_read && <p class="why">{s.why_read}</p>}
+    <div class="body"><Content /></div>
+    <div class="foot">
+      {s.scored ? (
+        <span class="scores" title={`depth ${s.depth_score} · novelty ${s.novelty_score} · utility ${s.utility_score}`}>
+          <span>depth <i style={`--w:${pct(s.depth_score)}`}></i></span>
+          <span>novelty <i style={`--w:${pct(s.novelty_score)}`}></i></span>
+          <span>utility <i style={`--w:${pct(s.utility_score)}`}></i></span>
+        </span>
+      ) : (
+        <span title="This edition was generated without model scoring">unscored</span>
+      )}
+      {s.comments && <a href={s.comments} rel="noopener">discussion ↗</a>}
+      {s.authors.length > 0 && <span>{s.authors.slice(0, 3).join(', ')}{s.authors.length > 3 ? ' et al.' : ''}</span>}
+      <span class="tags">{s.tags.map((t) => <span>{t}</span>)}</span>
+    </div>
+  </div>
+</article>
