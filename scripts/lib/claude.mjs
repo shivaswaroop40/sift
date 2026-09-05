@@ -3,12 +3,18 @@ import { z } from 'zod';
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import { VOICE } from '../../site.config.ts';
 
-// Provider: 'anthropic' (default), 'chat' (OpenAI chat completions), 'responses' (OpenAI Responses API).
+// Provider: 'anthropic' (Messages API, default), 'chat' (OpenAI chat completions), 'responses' (OpenAI Responses API).
 export const PROVIDER = process.env.SIFT_PROVIDER || 'anthropic';
 export const MODEL = process.env.SIFT_MODEL || (PROVIDER === 'anthropic' ? 'claude-opus-5' : 'minimax-m3');
 
-// A gateway such as OpenCode Zen (ANTHROPIC_BASE_URL=https://opencode.ai/zen/v1) speaks the Messages
-// API but is not guaranteed to pass beta headers through, so beta-only features are skipped there.
+// Optional second model tried when the primary fails after its own retries. Can be on another provider,
+// e.g. primary minimax-m3 over Messages and fallback deepseek-v4-flash over chat completions.
+export const FALLBACK = process.env.SIFT_FALLBACK_MODEL
+  ? { provider: process.env.SIFT_FALLBACK_PROVIDER || 'chat', model: process.env.SIFT_FALLBACK_MODEL }
+  : null;
+
+// A gateway such as OpenCode (ANTHROPIC_BASE_URL=https://opencode.ai/zen/go) speaks the Messages API but is not
+// guaranteed to pass beta headers through, and its non-Claude models do not support output_config.
 export const VIA_GATEWAY = Boolean(process.env.ANTHROPIC_BASE_URL) && !/api\.anthropic\.com/.test(process.env.ANTHROPIC_BASE_URL);
 
 let client;
@@ -17,41 +23,35 @@ function getClient() {
   return client;
 }
 
-// Shared request shape. On the first-party API, server-side refusal fallbacks are on so a rare policy
-// decline on one item does not sink the whole edition; the API re-runs the request on a fallback model.
-async function structured({ system, user, schema, effort = 'medium', maxTokens = 16000 }) {
-  if (PROVIDER !== 'anthropic') {
-    const compat = await import('./openai-compat.mjs');
-    const fn = PROVIDER === 'responses' ? compat.responsesStructured : compat.chatStructured;
-    return fn({ model: MODEL, system, user, schema, maxTokens });
-  }
+async function callMessages(model, { system, user, schema, effort, maxTokens }) {
   const c = getClient();
-  // Non-Claude models behind a Messages-compatible gateway (MiniMax, Qwen on OpenCode) do not support
-  // output_config, so ask for JSON in the prompt and validate it ourselves.
-  if (VIA_GATEWAY && !/^claude/.test(MODEL)) {
+  if (VIA_GATEWAY && !/^claude/.test(model)) {
+    // Prompt-based JSON with validation and repair. Three attempts for the odd malformed reply.
     const { extractJson, jsonSchemaFor } = await import('./openai-compat.mjs');
     let lastErr;
     for (let attempt = 0; attempt < 3; attempt++) {
       const t0 = Date.now();
       const res = await c.messages.create({
-        model: MODEL,
+        model,
         max_tokens: maxTokens,
         system: `${system}\n\nRespond with a single JSON object matching this schema. No prose, no code fence.\nSchema:\n${JSON.stringify(jsonSchemaFor(schema))}`,
         messages: [{ role: 'user', content: user }],
       });
       const text = res.content.filter((b) => b.type === 'text').map((b) => b.text).join('');
-      console.log(`      → messages ${MODEL} ${res.stop_reason} ${res.usage?.input_tokens ?? '?'}in/${res.usage?.output_tokens ?? '?'}out in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
+      console.log(`      → messages ${model} ${res.stop_reason} ${res.usage?.input_tokens ?? '?'}in/${res.usage?.output_tokens ?? '?'}out in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
       try {
-        return { data: schema.parse(extractJson(text)), usage: res.usage, model: res.model || MODEL };
+        return { data: schema.parse(extractJson(text)), usage: res.usage, model: res.model || model };
       } catch (err) {
         lastErr = err;
-        console.log(`      ! invalid JSON from model (attempt ${attempt + 1}): ${String(err.message).slice(0, 120)}`);
+        console.log(`      ! invalid JSON from ${model} (attempt ${attempt + 1}): ${String(err.message).slice(0, 120)}`);
       }
     }
     throw lastErr;
   }
+
+  // First-party Claude: structured outputs, and server-side refusal fallbacks unless behind a gateway.
   const params = {
-    model: MODEL,
+    model,
     max_tokens: maxTokens,
     system: [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }],
     messages: [{ role: 'user', content: user }],
@@ -63,18 +63,35 @@ async function structured({ system, user, schema, effort = 'medium', maxTokens =
       const res = VIA_GATEWAY
         ? await c.messages.parse(params)
         : await c.beta.messages.parse({ ...params, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' });
-      if (res.stop_reason === 'refusal') {
-        throw new Error(`refused (${res.stop_details?.category ?? 'unknown'})`);
-      }
+      if (res.stop_reason === 'refusal') throw new Error(`refused (${res.stop_details?.category ?? 'unknown'})`);
       if (!res.parsed_output) throw new Error('no parsed_output');
       return { data: res.parsed_output, usage: res.usage, model: res.model };
     } catch (err) {
       lastErr = err;
-      if (err instanceof Anthropic.AuthenticationError) throw err;
-      if (err instanceof Anthropic.BadRequestError) throw err;
+      if (err instanceof Anthropic.AuthenticationError || err instanceof Anthropic.BadRequestError) throw err;
     }
   }
   throw lastErr;
+}
+
+async function callProvider({ provider, model }, args) {
+  if (provider === 'anthropic') return callMessages(model, args);
+  const compat = await import('./openai-compat.mjs');
+  const fn = provider === 'responses' ? compat.responsesStructured : compat.chatStructured;
+  return fn({ model, ...args });
+}
+
+async function structured(args) {
+  const primary = { provider: PROVIDER, model: MODEL };
+  try {
+    return await callProvider(primary, { effort: 'medium', maxTokens: 16000, ...args });
+  } catch (err) {
+    if (!FALLBACK) throw err;
+    console.log(`      ! ${MODEL} failed: ${String(err.message).slice(0, 140)}`);
+    console.log(`      ↪ falling back to ${FALLBACK.model} (${FALLBACK.provider})`);
+    const out = await callProvider(FALLBACK, { effort: 'medium', maxTokens: 16000, ...args });
+    return { ...out, fellBack: true };
+  }
 }
 
 export function triageSchema(sections) {
@@ -126,16 +143,17 @@ export async function triage(domain, candidates, { chunkSize = PROVIDER === 'ant
   const schema = triageSchema(domain.sections);
   const system = triageSystem(domain);
   const out = new Map();
-  let usage = { input: 0, output: 0, cacheRead: 0 };
+  const usage = { input: 0, output: 0, cacheRead: 0, fallbacks: 0 };
   for (let i = 0; i < candidates.length; i += chunkSize) {
     const chunk = candidates.slice(i, i + chunkSize);
     const user = chunk
       .map((c) => `id: ${c.id}\nsource: ${c.source} (${c.kind})\ntitle: ${c.title}\nsnippet: ${c.snippet || '(none)'}`)
       .join('\n\n---\n\n');
-    const { data, usage: u } = await structured({ system, user, schema, effort: 'medium' });
-    usage.input += u.input_tokens ?? 0;
-    usage.output += u.output_tokens ?? 0;
-    usage.cacheRead += u.cache_read_input_tokens ?? 0;
+    const { data, usage: u, fellBack } = await structured({ system, user, schema });
+    usage.input += u?.input_tokens ?? 0;
+    usage.output += u?.output_tokens ?? 0;
+    usage.cacheRead += u?.cache_read_input_tokens ?? 0;
+    if (fellBack) usage.fallbacks++;
     for (const r of data.items) if (chunk.some((c) => c.id === r.id)) out.set(r.id, r);
   }
   return { results: out, usage };
@@ -160,6 +178,6 @@ ${VOICE}`;
 export async function summarise(domain, candidate, text) {
   const system = summarySystem(domain);
   const user = `Source: ${candidate.source}\nOriginal title: ${candidate.title}\nURL: ${candidate.url}\n\nText:\n${text}`;
-  const { data, usage, model } = await structured({ system, user, schema: SummarySchema, effort: 'medium', maxTokens: 4000 });
+  const { data, usage, model } = await structured({ system, user, schema: SummarySchema, maxTokens: 4000 });
   return { ...data, usage, model };
 }

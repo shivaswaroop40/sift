@@ -38,7 +38,7 @@ const log = (...a) => console.log(`[${new Date().toISOString().slice(11, 19)}]`,
 let claude = null;
 if (!DRY) {
   claude = await import('./lib/claude.mjs');
-  log(`provider: ${claude.PROVIDER}  model: ${claude.MODEL}`);
+  log(`provider: ${claude.PROVIDER}  model: ${claude.MODEL}${claude.FALLBACK ? `  fallback: ${claude.FALLBACK.model} (${claude.FALLBACK.provider})` : ""}`);
 } else {
   log('DRY RUN: no Claude calls. Stories will carry scored: false and feed snippets as bodies.');
 }
@@ -86,7 +86,7 @@ for (const domain of domains) {
     const { results: t, usage: u } = await claude.triage(domain, candidates);
     usage = u;
     scored = candidates.filter((c) => t.has(c.id)).map((c) => ({ ...c, ...t.get(c.id) }));
-    log(`triage: ${scored.filter((s) => s.keep).length} kept of ${scored.length} scored (in ${u.input}, cached ${u.cacheRead}, out ${u.output} tokens)`);
+    log(`triage: ${scored.filter((s) => s.keep).length} kept of ${scored.length} scored (in ${u.input}, cached ${u.cacheRead}, out ${u.output} tokens${u.fallbacks ? `, ${u.fallbacks} batch(es) via fallback` : ""})`);
   }
 
   // 3. Select

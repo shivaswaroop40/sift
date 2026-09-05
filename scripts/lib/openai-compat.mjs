@@ -2,7 +2,10 @@
 // Selected with SIFT_PROVIDER=chat or SIFT_PROVIDER=responses. Reads OPENAI_API_KEY and OPENAI_BASE_URL.
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 
-const BASE = (process.env.OPENAI_BASE_URL || 'https://opencode.ai/zen/v1').replace(/\/$/, '');
+const BASE = (
+  process.env.OPENAI_BASE_URL ||
+  (process.env.ANTHROPIC_BASE_URL ? process.env.ANTHROPIC_BASE_URL.replace(/\/$/, '') + '/v1' : 'https://opencode.ai/zen/v1')
+).replace(/\/$/, '');
 const KEY = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY;
 
 export function jsonSchemaFor(schema) {

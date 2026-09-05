@@ -81,4 +81,6 @@ The pipeline asks for native JSON-schema output first and falls back to a JSON-o
 
 Note on Go: its terms say it is meant for coding agents and that traffic is monitored. Sift sends a clear user agent and the `x-opencode-session` header as asked, and a day's run is about 65 short requests, but it is still outside the stated purpose. Zen pay-as-you-go has no such restriction.
 
-In GitHub Actions, add `SIFT_PROVIDER`, `SIFT_MODEL` and `OPENAI_BASE_URL` as repository variables and `OPENAI_API_KEY` as a secret.
+**Fallback model.** Set `SIFT_FALLBACK_MODEL` (and `SIFT_FALLBACK_PROVIDER`, default `chat`) to retry a failed request on a second model. The two may be on different endpoints; with a Go key, `minimax-m3` over Messages with `deepseek-v4-flash` over chat completions is a good pair, since the chat base URL is derived from `ANTHROPIC_BASE_URL` when `OPENAI_BASE_URL` is not set. Each story's frontmatter records the `model` that wrote it, and the run log counts how many triage batches fell back.
+
+In GitHub Actions, add `SIFT_PROVIDER`, `SIFT_MODEL`, `SIFT_FALLBACK_MODEL`, `SIFT_FALLBACK_PROVIDER` and `OPENAI_BASE_URL` as repository variables and `OPENAI_API_KEY` as a secret.
