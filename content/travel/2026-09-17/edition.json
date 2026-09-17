@@ -1,0 +1,72 @@
+{
+  "domain": "travel",
+  "date": "2026-09-17",
+  "generated_at": "2026-09-17T15:30:12.201Z",
+  "dry_run": false,
+  "model": "minimax-m3",
+  "candidates": 71,
+  "kept": 10,
+  "feeds": [
+    {
+      "name": "The Guardian Travel",
+      "ok": true,
+      "items": 1
+    },
+    {
+      "name": "New York Times Travel",
+      "ok": true,
+      "items": 3
+    },
+    {
+      "name": "Condé Nast Traveler",
+      "ok": true,
+      "items": 6
+    },
+    {
+      "name": "Skift",
+      "ok": true,
+      "items": 10
+    },
+    {
+      "name": "Simple Flying",
+      "ok": true,
+      "items": 10
+    },
+    {
+      "name": "Atlas Obscura",
+      "ok": true,
+      "items": 3
+    },
+    {
+      "name": "One Mile at a Time",
+      "ok": true,
+      "items": 15
+    },
+    {
+      "name": "View from the Wing",
+      "ok": true,
+      "items": 10
+    },
+    {
+      "name": "The Points Guy",
+      "ok": true,
+      "items": 13
+    },
+    {
+      "name": "Nomadic Matt",
+      "ok": true,
+      "items": 0
+    },
+    {
+      "name": "US State Dept Advisories",
+      "ok": true,
+      "items": 0
+    }
+  ],
+  "triage_usage": {
+    "input": 10592,
+    "output": 3803,
+    "cacheRead": 384,
+    "fallbacks": 0
+  }
+}
