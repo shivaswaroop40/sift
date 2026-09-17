@@ -14,7 +14,8 @@
     "ingest": "node scripts/ingest.mjs",
     "ingest:dry": "node scripts/ingest.mjs --dry-run",
     "feeds:check": "node scripts/check-feeds.mjs",
-    "check:build": "node scripts/check-build.mjs"
+    "check:build": "node scripts/check-build.mjs",
+    "test": "node --test \"scripts/lib/*.test.mjs\""
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.124.0",
