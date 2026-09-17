@@ -48,12 +48,12 @@ if (!domains.length) { console.error('no matching domains'); process.exit(1); }
 
 const KIND_PRIOR = { research: 1.5, paper: 1.2, blog: 1.0, advisory: 1.0, news: 0.8, community: 1.0 };
 
-for (const domain of domains) {
+async function buildEdition(domain) {
   log(`=== ${domain.name} (${domain.slug}) edition ${date} ===`);
   const dir = editionDir(domain.slug, date);
   if (fs.existsSync(dir) && !FORCE) {
     log(`edition exists at ${path.relative(process.cwd(), dir)}; use --force to rebuild. skipping.`);
-    continue;
+    return;
   }
   const perDay = limitOverride ?? domain.perDay ?? SITE.perDay;
   const seen = loadSeen(domain.slug);
@@ -70,7 +70,7 @@ for (const domain of domains) {
   }
   const candidates = [...byId.values()];
   log(`${candidates.length} new candidates after seen-filter`);
-  if (!candidates.length) { log('nothing to do'); continue; }
+  if (!candidates.length) { log('nothing to do'); return; }
 
   // 2. Triage
   let scored;
@@ -177,4 +177,19 @@ for (const domain of domains) {
   saveSeen(domain.slug, seen);
   log(`wrote ${written.length} stories to ${path.relative(process.cwd(), dir)}`);
 }
+
+// One domain failing (a gateway timeout mid-triage) must not cost the others their edition.
+const failed = [];
+for (const domain of domains) {
+  try {
+    await buildEdition(domain);
+  } catch (err) {
+    failed.push(domain.slug);
+    log(`!! ${domain.slug} failed: ${err.stack || err}`);
+  }
+}
 log('done');
+if (failed.length) {
+  log(`failed domains: ${failed.join(', ')}`);
+  process.exitCode = 1;
+}

@@ -30,6 +30,8 @@ jobs:
   ingest:
     if: github.event_name != 'push'
     runs-on: ubuntu-latest
+    # The slowest good run took 81 minutes. Without a cap a hung process holds the job for GitHub's 6 hours.
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -51,6 +53,8 @@ jobs:
           [ "${{ inputs.force }}" = "true" ] && ARGS="$ARGS --force"
           node scripts/ingest.mjs $ARGS
       - name: Commit editions
+        # Editions are written whole or not at all, so whatever is on disk after a failed ingest is safe to keep.
+        if: ${{ !cancelled() }}
         run: |
           git config user.name "sift-bot"
           git config user.email "sift-bot@users.noreply.github.com"
