@@ -30,8 +30,8 @@ export function extractJson(text) {
   }
 }
 
-// OpenCode asks clients to identify themselves and send a session id so it can optimise caching.
-const SESSION = `sift-${new Date().toISOString().slice(0, 10)}-${Math.random().toString(36).slice(2, 8)}`;
+// OpenCode Go rejects requests without a session id (400 MissingSessionID), on the Messages API too.
+export const SESSION = `sift-${new Date().toISOString().slice(0, 10)}-${Math.random().toString(36).slice(2, 8)}`;
 
 async function post(path, body) {
   const t0 = Date.now();

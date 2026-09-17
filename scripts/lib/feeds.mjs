@@ -3,9 +3,9 @@ import { htmlToText, truncate, idFor, canonicalUrl } from './text.mjs';
 
 const UA = 'Mozilla/5.0 (compatible; SiftDigest/0.1; +https://github.com/) feed reader';
 
+const FEED_ACCEPT = 'application/rss+xml, application/atom+xml, application/xml, text/xml;q=0.9, */*;q=0.8';
+
 const parser = new Parser({
-  timeout: 20000,
-  headers: { 'User-Agent': UA, Accept: 'application/rss+xml, application/atom+xml, application/xml, text/xml;q=0.9, */*;q=0.8' },
   customFields: {
     item: [
       ['content:encoded', 'contentEncoded'],
@@ -18,6 +18,28 @@ const parser = new Parser({
   },
 });
 
+// An unread body keeps its socket referenced, and node then never exits after "done".
+async function releaseBody(res) {
+  if (res && !res.bodyUsed) await res.body?.cancel().catch(() => {});
+}
+
+// rss-parser's own parseURL leaves redirect and error responses unread and never destroys a timed-out request.
+async function fetchXml(url, timeoutMs = 20000) {
+  const res = await fetch(url, { headers: { 'User-Agent': UA, Accept: FEED_ACCEPT }, signal: AbortSignal.timeout(timeoutMs), redirect: 'follow' });
+  try {
+    if (!res.ok) throw new Error(`Status code ${res.status}`);
+    const charset = res.headers.get('content-type')?.match(/charset=["']?([\w-]+)/i)?.[1];
+    const bytes = await res.arrayBuffer();
+    try {
+      return new TextDecoder(charset || 'utf-8').decode(bytes);
+    } catch {
+      return new TextDecoder().decode(bytes);
+    }
+  } finally {
+    await releaseBody(res);
+  }
+}
+
 /**
  * Fetch one feed and return normalised candidates.
  * Each candidate: { id, title, url, source, kind, publishedAt, snippet, fullText, authors, commentsUrl }
@@ -27,7 +49,7 @@ export async function fetchFeed(feed, { now = new Date(), defaultWindowHours = 3
   const cutoff = new Date(now.getTime() - windowHours * 3600 * 1000);
   let parsed;
   try {
-    parsed = await parser.parseURL(feed.url);
+    parsed = await parser.parseString(await fetchXml(feed.url));
   } catch (err) {
     return { feed, ok: false, error: String(err.message || err).slice(0, 160), items: [] };
   }
@@ -95,8 +117,9 @@ export async function fetchAllFeeds(feeds, opts = {}, concurrency = 6) {
 export async function fetchArticleText(url, { maxChars = 7000, timeoutMs = 15000 } = {}) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
+  let res;
   try {
-    const res = await fetch(url, { headers: { 'User-Agent': UA, Accept: 'text/html,*/*;q=0.8' }, signal: ctrl.signal, redirect: 'follow' });
+    res = await fetch(url, { headers: { 'User-Agent': UA, Accept: 'text/html,*/*;q=0.8' }, signal: ctrl.signal, redirect: 'follow' });
     if (!res.ok) return null;
     const type = res.headers.get('content-type') || '';
     if (!/html|xml|text/i.test(type)) return null;
@@ -110,5 +133,6 @@ export async function fetchArticleText(url, { maxChars = 7000, timeoutMs = 15000
     return null;
   } finally {
     clearTimeout(t);
+    await releaseBody(res);
   }
 }

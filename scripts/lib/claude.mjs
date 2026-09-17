@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import { VOICE } from '../../site.config.ts';
+import { SESSION } from './openai-compat.mjs';
 
 // Provider: 'anthropic' (Messages API, default), 'chat' (OpenAI chat completions), 'responses' (OpenAI Responses API).
 export const PROVIDER = process.env.SIFT_PROVIDER || 'anthropic';
@@ -19,7 +20,8 @@ export const VIA_GATEWAY = Boolean(process.env.ANTHROPIC_BASE_URL) && !/api\.ant
 
 let client;
 function getClient() {
-  client ??= new Anthropic(); // reads ANTHROPIC_API_KEY and ANTHROPIC_BASE_URL from the environment
+  // Reads ANTHROPIC_API_KEY and ANTHROPIC_BASE_URL from the environment.
+  client ??= new Anthropic(VIA_GATEWAY ? { defaultHeaders: { 'x-opencode-session': SESSION } } : {});
   return client;
 }
 
