@@ -48,7 +48,7 @@ Triage is one call per 40 candidates with a cached system prompt. Summaries are 
 
 Two cases, chosen with `SIFT_PROVIDER`.
 
-**Claude models on Zen** speak the Anthropic Messages API, so the default provider works. Set `ANTHROPIC_API_KEY` to the Zen key and `ANTHROPIC_BASE_URL=https://opencode.ai/zen/v1`. The pipeline notices the gateway and skips the beta-only refusal fallback.
+**Claude models on Zen** speak the Anthropic Messages API, so the default provider works. Set `ANTHROPIC_API_KEY` to the Zen key and `ANTHROPIC_BASE_URL=https://opencode.ai/zen`. The SDK appends `/v1/messages` itself, so a base URL that ends in `/v1` returns 404. The pipeline notices the gateway and skips the beta-only refusal fallback.
 
 **Open models on Zen or Go** sit on three different endpoints, and the model IDs differ between Zen and Go. From OpenCode's docs:
 
@@ -59,7 +59,7 @@ Two cases, chosen with `SIFT_PROVIDER`.
 | MiniMax M3, Qwen 3.8 Max | `minimax-m3`, `qwen3.8-max` | messages | `SIFT_PROVIDER=anthropic` + `ANTHROPIC_BASE_URL` + `ANTHROPIC_API_KEY` |
 | GLM 5.3, Kimi K3, DeepSeek V4 | `glm-5.3`, `kimi-k3`, `deepseek-v4-pro` | chat/completions | `SIFT_PROVIDER=chat` |
 
-Example for a Go key and Muse Spark:
+Example for a Go key and Muse Spark. Go refuses Muse Spark with a 403 `DataPolicyError` until the workspace opts in to data collection:
 
 ```bash
 SIFT_PROVIDER=responses
@@ -74,7 +74,7 @@ Example for a Go key and MiniMax M3, which speaks the Messages API:
 SIFT_PROVIDER=anthropic
 SIFT_MODEL=minimax-m3
 ANTHROPIC_API_KEY=<Go key>
-ANTHROPIC_BASE_URL=https://opencode.ai/zen/go/v1
+ANTHROPIC_BASE_URL=https://opencode.ai/zen/go   # no /v1 here, the SDK adds it
 ```
 
 The pipeline asks for native JSON-schema output first and falls back to a JSON-only prompt with validation, because gateways and open models vary in what they accept. Expect more retries and occasionally weaker summaries than with Claude; the triage prompt is the part that suffers most on small models.
