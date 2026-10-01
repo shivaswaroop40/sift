@@ -52,17 +52,19 @@ async function callMessages(model, { system, user, schema, effort, maxTokens }) 
   }
 
   // First-party Claude: structured outputs, and server-side refusal fallbacks unless behind a gateway.
+  // Haiku 4.5 rejects output_config.effort with a 400 and has no server-side fallback targets.
+  const legacy = /haiku-4-5/.test(model);
   const params = {
     model,
     max_tokens: maxTokens,
     system: [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }],
     messages: [{ role: 'user', content: user }],
-    output_config: { format: zodOutputFormat(schema), effort },
+    output_config: legacy ? { format: zodOutputFormat(schema) } : { format: zodOutputFormat(schema), effort },
   };
   let lastErr;
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const res = VIA_GATEWAY
+      const res = VIA_GATEWAY || legacy
         ? await c.messages.parse(params)
         : await c.beta.messages.parse({ ...params, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' });
       if (res.stop_reason === 'refusal') throw new Error(`refused (${res.stop_details?.category ?? 'unknown'})`);
