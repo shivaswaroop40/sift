@@ -78,6 +78,9 @@ export async function chatStructured({ model, system, user, schema, maxTokens })
     try {
       const data = await post('/chat/completions', body);
       const text = data.choices?.[0]?.message?.content ?? '';
+      if (!text && data.choices?.[0]?.finish_reason === 'length') {
+        throw new Error(`hit max_tokens with no content (${data.usage?.completion_tokens_details?.reasoning_tokens ?? '?'} reasoning tokens)`);
+      }
       const parsed = schema.parse(extractJson(text));
       return { data: parsed, usage: normaliseUsage(data.usage), model: data.model || model };
     } catch (err) {

@@ -182,6 +182,8 @@ ${VOICE}`;
 export async function summarise(domain, candidate, text) {
   const system = summarySystem(domain);
   const user = `Source: ${candidate.source}\nOriginal title: ${candidate.title}\nURL: ${candidate.url}\n\nText:\n${text}`;
-  const { data, usage, model } = await structured({ system, user, schema: SummarySchema, maxTokens: 4000 });
+  // No lower cap here: reasoning models (GLM 5.3 on Go) spend most of the budget thinking before the JSON,
+  // and a long article at 4000 tokens ended with empty content.
+  const { data, usage, model } = await structured({ system, user, schema: SummarySchema });
   return { ...data, usage, model };
 }
