@@ -6,7 +6,7 @@ import { SESSION } from './openai-compat.mjs';
 
 // Provider: 'anthropic' (Messages API, default), 'chat' (OpenAI chat completions), 'responses' (OpenAI Responses API).
 export const PROVIDER = process.env.SIFT_PROVIDER || 'anthropic';
-export const MODEL = process.env.SIFT_MODEL || (PROVIDER === 'anthropic' ? 'claude-opus-5' : 'minimax-m3');
+export const MODEL = process.env.SIFT_MODEL || (PROVIDER === 'anthropic' ? 'claude-sonnet-5-5' : 'minimax-m3');
 
 // Optional second model tried when the primary fails after its own retries. Can be on another provider,
 // e.g. primary minimax-m3 over Messages and fallback deepseek-v4-flash over chat completions.

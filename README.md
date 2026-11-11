@@ -42,7 +42,7 @@ Useful flags: `--dry-run` (no model calls, heuristic ranking, feed excerpts as b
 
 ## Cost
 
-Triage is one call per 40 candidates with a cached system prompt. Summaries are one call per kept story. A day across four domains is roughly 20 triage calls and 45 summary calls on `claude-opus-5`. Set `SIFT_MODEL=claude-sonnet-5` to run cheaper.
+Triage is one call per 40 candidates with a cached system prompt. Summaries are one call per kept story. A day across four domains is roughly 20 triage calls and 45 summary calls on `claude-sonnet-5-5`. Set `SIFT_MODEL=claude-opus-5-5` for stronger triage at twice the price.
 
 ## Using OpenCode Zen or Go
 
@@ -81,6 +81,6 @@ The pipeline asks for native JSON-schema output first and falls back to a JSON-o
 
 Note on Go: its terms say it is meant for coding agents and that traffic is monitored. Sift sends a clear user agent and the `x-opencode-session` header as asked, and a day's run is about 65 short requests, but it is still outside the stated purpose. Zen pay-as-you-go has no such restriction.
 
-**Fallback model.** Set `SIFT_FALLBACK_MODEL` (and `SIFT_FALLBACK_PROVIDER`, default `chat`) to retry a failed request on a second model. The two may be on different endpoints; with a Go key, `glm-5.3` with `kimi-k3` as fallback (both over chat completions) is what the daily run uses, and the chat base URL is derived from `ANTHROPIC_BASE_URL` when `OPENAI_BASE_URL` is not set. Go has renamed `deepseek-v4-flash` to `deepseek-v4.1-flash`, which also needs Global regions enabled in the workspace's privacy settings; `GET <base>/v1/models` lists what your key can use. Each story's frontmatter records the `model` that wrote it, and the run log counts how many triage batches fell back.
+**Fallback model.** Set `SIFT_FALLBACK_MODEL` (and `SIFT_FALLBACK_PROVIDER`, default `chat`) to retry a failed request on a second model. The two may be on different endpoints; with a Go key, `glm-5.3` with `kimi-k3` as fallback (both over chat completions) works well, and the chat base URL is derived from `ANTHROPIC_BASE_URL` when `OPENAI_BASE_URL` is not set. Go has renamed `deepseek-v4-flash` to `deepseek-v4.1-flash`, which also needs Global regions enabled in the workspace's privacy settings; `GET <base>/v1/models` lists what your key can use. Each story's frontmatter records the `model` that wrote it, and the run log counts how many triage batches fell back.
 
 In GitHub Actions, add `SIFT_PROVIDER`, `SIFT_MODEL`, `SIFT_FALLBACK_MODEL`, `SIFT_FALLBACK_PROVIDER` and `OPENAI_BASE_URL` as repository variables and `OPENAI_API_KEY` as a secret.
