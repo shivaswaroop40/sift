@@ -1,0 +1,112 @@
+{
+  "domain": "tech",
+  "date": "2026-11-12",
+  "generated_at": "2026-11-12T13:13:47.982Z",
+  "dry_run": false,
+  "model": "claude-sonnet-5-5",
+  "candidates": 109,
+  "kept": 12,
+  "feeds": [
+    {
+      "name": "Hacker News (100+ points)",
+      "ok": true,
+      "items": 20
+    },
+    {
+      "name": "Lobsters",
+      "ok": true,
+      "items": 22
+    },
+    {
+      "name": "LWN",
+      "ok": true,
+      "items": 5
+    },
+    {
+      "name": "The Register",
+      "ok": true,
+      "items": 27
+    },
+    {
+      "name": "Ars Technica",
+      "ok": true,
+      "items": 12
+    },
+    {
+      "name": "InfoQ",
+      "ok": true,
+      "items": 12
+    },
+    {
+      "name": "TechCrunch",
+      "ok": true,
+      "items": 16
+    },
+    {
+      "name": "Simon Willison",
+      "ok": true,
+      "items": 5
+    },
+    {
+      "name": "Martin Fowler",
+      "ok": true,
+      "items": 4
+    },
+    {
+      "name": "The Pragmatic Engineer",
+      "ok": true,
+      "items": 0
+    },
+    {
+      "name": "Cloudflare Blog",
+      "ok": true,
+      "items": 1
+    },
+    {
+      "name": "Meta Engineering",
+      "ok": true,
+      "items": 4
+    },
+    {
+      "name": "Netflix Tech Blog",
+      "ok": true,
+      "items": 1
+    },
+    {
+      "name": "GitHub Blog",
+      "ok": true,
+      "items": 0
+    },
+    {
+      "name": "AWS News",
+      "ok": true,
+      "items": 1
+    },
+    {
+      "name": "Kubernetes Blog",
+      "ok": true,
+      "items": 0
+    },
+    {
+      "name": "CNCF",
+      "ok": true,
+      "items": 10
+    },
+    {
+      "name": "arXiv cs.SE",
+      "ok": true,
+      "items": 0
+    },
+    {
+      "name": "arXiv cs.DC",
+      "ok": true,
+      "items": 0
+    }
+  ],
+  "triage_usage": {
+    "input": 18142,
+    "output": 8435,
+    "cacheRead": 2616,
+    "fallbacks": 0
+  }
+}
