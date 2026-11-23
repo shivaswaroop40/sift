@@ -9,17 +9,18 @@ export async function getStaticPaths() {
 const { domain } = Astro.props;
 const editions = await editionsFor(domain.slug);
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const count = `${editions.length} ${editions.length === 1 ? 'edition' : 'editions'}`;
+const oldest = editions.at(-1)?.[0];
 ---
-<Base title={`${SITE.name} · ${domain.name} archive`} domain={domain} current="archive">
-  <section class="section">
-    <p class="kicker">Archive <span>· {editions.length} {editions.length === 1 ? 'edition' : 'editions'}</span></p>
-    <h2 class="section-title">{domain.name}</h2>
-    <ul class="row-list">
+<Base title={`${SITE.name} · ${domain.name} archive`} domain={domain} current="archive" edition={[`${domain.name} archive`, count, ...(oldest ? [`Since ${fmtDate(oldest)}`] : [])]}>
+  <section class="listing" aria-labelledby="archive-head">
+    <h2 class="section-head" id="archive-head">Every {domain.name.toLowerCase()} edition</h2>
+    <ul class="rows">
       {editions.map(([date, stories]) => (
         <li>
           <div>
-            <strong><a href={`${base}/${domain.slug}/${date}/`}>{fmtDate(date)}</a></strong>
-            <span class="sub">{stories.length} stories · {stories[0]?.data.title}</span>
+            <p class="row-title"><a href={`${base}/${domain.slug}/${date}/`}>{fmtDate(date)}</a></p>
+            <p class="sub">{stories.length} stories · Leading: {stories[0]?.data.title}</p>
           </div>
           <span class="when">{date}</span>
         </li>

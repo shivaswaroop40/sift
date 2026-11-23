@@ -10,6 +10,7 @@ export type Domain = {
   short: string;
   accent: string;
   accentDark: string;
+  cover: string;
   sections: string[];
   feeds: { name: string; url: string; kind?: string }[];
 };
@@ -38,8 +39,12 @@ export async function editionMeta(slug: string, date: string) {
   return all.find((e) => e.data.domain === slug && e.data.date === date)?.data ?? null;
 }
 
+const ACRONYMS = new Set(['ai', 'ml']);
+
 export function sectionLabel(s: string) {
-  return s.replace(/-/g, ' ').replace(/\band\b/g, '&');
+  const words = s.split('-').map((w) => (ACRONYMS.has(w) ? w.toUpperCase() : w));
+  const label = words.join(' ');
+  return label.charAt(0).toUpperCase() + label.slice(1);
 }
 
 export function fmtDate(iso: string) {

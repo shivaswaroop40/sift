@@ -4,6 +4,7 @@
   "short": "Software, systems and the industry around them",
   "accent": "#1f5fbf",
   "accentDark": "#6ea1ff",
+  "cover": "plates/press-microphone.webp",
   "audience": "A senior software or platform engineer who builds and runs distributed systems, cares about Kubernetes, databases, observability, developer tooling and the economics of the industry, and is tired of product announcements dressed up as news.",
   "criteria": "Reward: engineering write-ups with real mechanisms and numbers, post-mortems, well-argued essays on how software is built, papers with a result that changes practice, meaningful open-source releases, and industry news with consequences for people who build software. Penalise: product launches without technical substance, funding rounds, listicles, opinion pieces that restate common knowledge, consumer gadget reviews, and anything that is mainly marketing.",
   "sections": ["systems", "infrastructure", "languages-and-tools", "ai-and-ml", "security", "industry", "papers", "culture"],

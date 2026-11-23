@@ -4,6 +4,7 @@
   "short": "Places, routes, points and the business of getting there",
   "accent": "#1e7d5a",
   "accentDark": "#5fd3a3",
+  "cover": "plates/bellows-camera.webp",
   "audience": "An independent traveller who plans their own trips, flies often enough to care about routes, fares and loyalty programmes, prefers places with a story over resorts, and wants to know about changes that affect how and where they can go.",
   "criteria": "Reward: changes to entry rules, visas, schengen and ETIAS style systems, new routes and airline or rail changes that open up places, honest destination pieces with specifics, well-researched history or oddity pieces about places, and analysis of the travel industry with consequences for travellers. Rank official travel advisories higher when the level changes. Penalise: credit card sign-up bonus promotion, sponsored hotel reviews, generic top-ten lists, luxury coverage with no practical use, and press-release rewrites.",
   "sections": ["destinations", "flights-and-routes", "rules-and-visas", "rail-and-overland", "points-and-fares", "industry", "oddities"],

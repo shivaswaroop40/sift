@@ -4,30 +4,32 @@ import { SITE } from '../../site.config';
 import { DOMAINS } from '../lib/domains';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const site = String(Astro.site ?? '').replace(/\/$/, '');
+const sources = DOMAINS.reduce((n, d) => n + d.feeds.length, 0);
 ---
-<Base title={`About ${SITE.name}`} current="about">
-  <section class="section">
-    <p class="kicker">About</p>
+<Base title={`About ${SITE.name}`} current="about" edition={['About', `${DOMAINS.length} fields`, `${sources} sources`]}>
+  <section class="listing" aria-labelledby="about-head">
+    <h2 class="section-head" id="about-head">What this is</h2>
     <div class="prose">
       <p>{SITE.description}</p>
       <p>Every morning a script reads the feeds below, drops anything it has seen before, and asks a language model to score each new item for depth, novelty and usefulness to a specific reader. The top dozen get a short summary and a line on why the original is worth opening. Everything links out. The model can be wrong, so read the source before you repeat a claim.</p>
     </div>
   </section>
-  <section class="section">
-    <p class="kicker">Subscribe</p>
-    <p class="section-note">One RSS feed per field. Works with NetNewsWire, Reeder, Feedly and any other reader, and gives you an iPhone home screen widget for free. Or open a field in Safari and use Share, then Add to Home Screen.</p>
-    <ul class="arrow-list">
+  <section class="listing" aria-labelledby="subscribe-head">
+    <h2 class="section-head" id="subscribe-head">Subscribe</h2>
+    <div class="prose"><p>One RSS feed per field. Works with NetNewsWire, Reeder, Feedly and any other reader, and gives you an iPhone home screen widget for free. Or open a field in Safari and use Share, then Add to Home Screen.</p></div>
+    <ul class="subscribe">
       {DOMAINS.map((d) => <li><a href={`${base}/${d.slug}/rss.xml`}>{d.name}</a> <code>{`${site}${base}/${d.slug}/rss.xml`}</code></li>)}
     </ul>
   </section>
-  {DOMAINS.map((d) => (
-    <section class="section">
-      <p class="kicker">{d.name} <span>· {d.feeds.length} sources</span></p>
-      <ul class="row-list">
-        {d.feeds.map((f) => (
-          <li><strong><a href={f.url}>{f.name}</a></strong><span class="when">{f.kind}</span></li>
-        ))}
-      </ul>
-    </section>
-  ))}
+  <section class="feed-columns" aria-label="Sources">
+    {DOMAINS.map((d) => (
+      <div>
+        <h3>{d.name}</h3>
+        <p class="label">{d.feeds.length} sources</p>
+        <ul class="feed-list">
+          {d.feeds.map((f) => <li><a href={f.url}>{f.name}</a><span>{f.kind}</span></li>)}
+        </ul>
+      </div>
+    ))}
+  </section>
 </Base>

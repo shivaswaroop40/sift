@@ -1,17 +1,24 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import Story from './Story.astro';
-import { fmtDate, editionMeta, type Domain } from '../lib/domains';
+import { editionMeta, type Domain } from '../lib/domains';
 
-interface Props { domain: Domain; date: string; stories: CollectionEntry<'stories'>[]; isLatest: boolean }
-const { domain, date, stories, isLatest } = Astro.props;
+interface Props { domain: Domain; date: string; stories: CollectionEntry<'stories'>[] }
+const { domain, date, stories } = Astro.props;
 const meta = await editionMeta(domain.slug, date);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const [lead, ...rest] = stories;
 ---
-<section class="section">
-  <p class="kicker">{isLatest ? 'Today' : 'Edition'} <span>· {fmtDate(date)}{meta && ` · ${meta.kept} of ${meta.candidates} candidates`}</span></p>
-  <h2 class="section-title">{domain.name}</h2>
-  {meta?.dry_run && (
-    <p class="notice">This edition was built without model scoring. Rankings are a placeholder and bodies are feed excerpts. The first scheduled run replaces it.</p>
-  )}
-  {stories.map((s, i) => <Story entry={s} lead={i === 0} />)}
+{meta?.dry_run && (
+  <p class="notice">This edition was built without model scoring. Rankings are a placeholder and bodies are feed excerpts. The first scheduled run replaces it.</p>
+)}
+<section class="lead-row">
+  <Story entry={lead} lead>
+    <img slot="plate" class="plate" src={`${base}/${domain.cover}`} alt="" width="1200" height="686" />
+  </Story>
 </section>
+{rest.length > 0 && (
+  <section class="grid" aria-label="More stories">
+    {rest.map((s) => <Story entry={s} />)}
+  </section>
+)}

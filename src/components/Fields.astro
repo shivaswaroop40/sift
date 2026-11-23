@@ -1,0 +1,29 @@
+---
+import { SITE } from '../../site.config';
+import { DOMAINS, editionsFor, type Domain } from '../lib/domains';
+
+interface Props { exclude?: Domain }
+const { exclude } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const cards = await Promise.all(
+  DOMAINS.filter((d) => d.slug !== exclude?.slug).map(async (d) => {
+    const [latest] = await editionsFor(d.slug);
+    return { domain: d, leadTitle: latest?.[1][0]?.data.title };
+  }),
+);
+---
+<section class:list={['fields', { 'fields-all': !exclude }]} aria-labelledby="fields-head">
+  <div class="fields-intro">
+    <h2 class="section-head" id="fields-head">How the dozen gets picked</h2>
+    <p>{SITE.description}</p>
+    <p>Each field has its own front page, archive, RSS feed and a small JSON endpoint for widgets.</p>
+  </div>
+  {cards.map(({ domain, leadTitle }) => (
+    <a class="field-card" href={`${base}/${domain.slug}/`}>
+      <img class="plate" src={`${base}/${domain.cover}`} alt="" width="1200" height="686" loading="lazy" />
+      <p class="field-name">{domain.name}</p>
+      <p>{domain.short}.</p>
+      {leadTitle && <p class="field-lead">Leading: {leadTitle}</p>}
+    </a>
+  ))}
+</section>
