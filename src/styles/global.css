@@ -1,5 +1,21 @@
+/* Kalnia's 4 reads as a root sign and the font has no alternate, so digits come from Bodoni Moda, set one step heavier to match Kalnia's stems. */
+@font-face {
+  font-family: "Sift Digits";
+  src: url("./fonts/sift-digits-500.woff") format("woff");
+  font-weight: 500;
+  font-display: swap;
+  unicode-range: U+0030-0039;
+}
+@font-face {
+  font-family: "Sift Digits";
+  src: url("./fonts/sift-digits-700.woff") format("woff");
+  font-weight: 700;
+  font-display: swap;
+  unicode-range: U+0030-0039;
+}
+
 :root {
-  --font-display: "Kalnia", Georgia, "Times New Roman", serif;
+  --font-display: "Sift Digits", "Kalnia", Georgia, "Times New Roman", serif;
   --font-sans: "Funnel Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
 
