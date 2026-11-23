@@ -182,9 +182,6 @@ code {
   letter-spacing: -0.01em;
 }
 .grid .why { margin: 0 0 10px; font-size: 15px; font-style: italic; line-height: 1.45; color: var(--muted); }
-@media (min-width: 641px) {
-  .grid .why { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
-}
 .source { margin: 0; font-size: 14px; color: var(--muted); }
 
 .fields {
