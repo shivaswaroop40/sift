@@ -35,6 +35,7 @@ const kind = s.kind.charAt(0).toUpperCase() + s.kind.slice(1);
   <article class="entry" id={s.id}>
     <p class="label">{sectionLabel(s.section)}</p>
     <h3><a href={s.url} rel="noopener">{s.title}</a></h3>
+    {s.why_read && <p class="why">{s.why_read}</p>}
     <p class="source">{s.source}</p>
   </article>
 )}
