@@ -5,25 +5,31 @@ import { sectionLabel } from '../lib/domains';
 interface Props { entry: CollectionEntry<'stories'>; lead?: boolean }
 const { entry, lead = false } = Astro.props;
 const s = entry.data;
-const { Content } = await render(entry);
-const host = (() => { try { return new URL(s.url).hostname.replace(/^www\./, ''); } catch { return ''; } })();
-const showHost = host && !s.source.toLowerCase().includes(host.split('.')[0]);
+const Content = lead ? (await render(entry)).Content : null;
+const kind = s.kind.charAt(0).toUpperCase() + s.kind.slice(1);
 ---
-<article class:list={['entry', { lead }]} id={s.id}>
-  <div class="entry-head">
+{Content ? (
+  <article class="entry lead" id={s.id}>
+    <p class="label">{sectionLabel(s.section)} · No. {s.rank}</p>
+    <h2><a href={s.url} rel="noopener">{s.title}</a></h2>
+    {s.why_read && <p class="dek">{s.why_read}</p>}
+    <div class="entry-body"><Content /></div>
+    <div class="meta">
+      <span>{s.source}</span>
+      <span>{kind}</span>
+      {s.scored ? (
+        <span>Depth {s.depth_score} · Novelty {s.novelty_score} · Use {s.utility_score}</span>
+      ) : (
+        <span title="This edition was generated without model scoring">Unscored</span>
+      )}
+      {s.comments && <a href={s.comments} rel="noopener">Discussion</a>}
+      <a href={s.url} rel="noopener">{s.kind === 'paper' ? 'Read the paper' : 'Read the original'}</a>
+    </div>
+  </article>
+) : (
+  <article class="entry" id={s.id}>
+    <p class="label">{sectionLabel(s.section)}</p>
     <h3><a href={s.url} rel="noopener">{s.title}</a></h3>
-    <p class="entry-period">№ {s.rank} · {sectionLabel(s.section)}</p>
-  </div>
-  <p class="entry-org"><b>{s.source}</b>{showHost && ` · ${host}`}{s.authors.length > 0 && ` · ${s.authors.slice(0, 3).join(', ')}${s.authors.length > 3 ? ' et al.' : ''}`}</p>
-  {s.why_read && <p class="why">{s.why_read}</p>}
-  <div class="entry-body"><Content /></div>
-  <div class="entry-foot">
-    {s.scored ? (
-      <span class="scores">depth <i>{s.depth_score}</i> · novelty <i>{s.novelty_score}</i> · utility <i>{s.utility_score}</i></span>
-    ) : (
-      <span title="This edition was generated without model scoring">unscored</span>
-    )}
-    {s.comments && <a href={s.comments} rel="noopener">discussion</a>}
-  </div>
-  {s.tags.length > 0 && <ul class="tags">{s.tags.map((t) => <li>{t}</li>)}</ul>}
-</article>
+    <p class="source">{s.source}</p>
+  </article>
+)}
