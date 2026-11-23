@@ -10,9 +10,14 @@ const kind = s.kind.charAt(0).toUpperCase() + s.kind.slice(1);
 ---
 {Content ? (
   <article class="entry lead" id={s.id}>
-    <p class="label">{sectionLabel(s.section)} · No. {s.rank}</p>
-    <h2><a href={s.url} rel="noopener">{s.title}</a></h2>
-    {s.why_read && <p class="dek">{s.why_read}</p>}
+    <div class="lead-top">
+      <div>
+        <p class="label">{sectionLabel(s.section)} · No. {s.rank}</p>
+        <h2><a href={s.url} rel="noopener">{s.title}</a></h2>
+        {s.why_read && <p class="dek">{s.why_read}</p>}
+      </div>
+      <figure><slot name="plate" /></figure>
+    </div>
     <div class="entry-body"><Content /></div>
     <div class="meta">
       <span>{s.source}</span>

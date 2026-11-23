@@ -146,13 +146,16 @@ code {
 /* Plates: cream paper ground, so they sit in an ink frame to read as deliberate cards. */
 .plate { display: block; width: 100%; height: auto; aspect-ratio: 7 / 4; object-fit: cover; object-position: 50% 30%; }
 
-.lead-row {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 40px;
-  padding: 36px 0;
-  border-bottom: 1px solid var(--rule);
+.lead-row { padding: 36px 0; border-bottom: 1px solid var(--rule); }
+.lead-top { display: grid; gap: 24px 40px; margin-bottom: 20px; }
+.lead-top figure { margin: 0; }
+.lead-top .plate { border: 3px solid var(--ink); }
+@media (min-width: 900px) {
+  .lead-top { grid-template-columns: 1fr 1fr; }
+  .lead-top figure { position: relative; min-height: 260px; }
+  .lead-top .plate { position: absolute; inset: 0; height: 100%; aspect-ratio: auto; }
+  .lead .entry-body { columns: 2; column-gap: 40px; orphans: 2; widows: 2; }
 }
-.lead-row figure { margin: 0; }
-.lead-row .plate { border: 3px solid var(--ink); }
 .entry.lead h2 {
   margin: 8px 0 14px;
   font: 700 clamp(32px, 3.6vw, 46px)/1.04 var(--font-display);

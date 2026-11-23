@@ -13,10 +13,9 @@ const [lead, ...rest] = stories;
   <p class="notice">This edition was built without model scoring. Rankings are a placeholder and bodies are feed excerpts. The first scheduled run replaces it.</p>
 )}
 <section class="lead-row">
-  <Story entry={lead} lead />
-  <figure>
-    <img class="plate" src={`${base}/${domain.cover}`} alt="" width="1200" height="686" />
-  </figure>
+  <Story entry={lead} lead>
+    <img slot="plate" class="plate" src={`${base}/${domain.cover}`} alt="" width="1200" height="686" />
+  </Story>
 </section>
 {rest.length > 0 && (
   <section class="grid" aria-label="More stories">
