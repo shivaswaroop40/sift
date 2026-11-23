@@ -4,6 +4,7 @@
   "short": "Process industry news and the research behind it",
   "accent": "#b8641b",
   "accentDark": "#ffa657",
+  "cover": "plates/studio-reels.webp",
   "audience": "A practising chemical engineer who works on process design and operations, follows separations, reaction engineering, process safety, electrochemistry and the energy transition, and wants both what the industry is doing and what the literature has just found.",
   "criteria": "Reward: plant incidents and safety findings with root causes, major capacity or technology decisions in chemicals, refining, hydrogen, CCS and batteries, regulatory changes with process consequences, and papers whose result changes a design choice, a model, or a process route. For papers, rank by how much a working engineer could use the result, not by journal prestige. Penalise: earnings coverage without operational detail, incremental papers with no clear application, press releases about partnerships, and generic sustainability messaging.",
   "sections": ["process-safety", "industry", "separations", "reaction-engineering", "energy-transition", "materials", "modelling-and-control", "papers"],

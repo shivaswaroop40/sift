@@ -10,6 +10,7 @@ export type Domain = {
   short: string;
   accent: string;
   accentDark: string;
+  cover: string;
   sections: string[];
   feeds: { name: string; url: string; kind?: string }[];
 };

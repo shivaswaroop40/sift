@@ -4,6 +4,7 @@
   "short": "Threats, vulnerabilities, defence and research",
   "accent": "#b3261e",
   "accentDark": "#ff7a6e",
+  "cover": "plates/studio-reels.webp",
   "audience": "A security engineer or platform engineer responsible for defending production systems, who needs to know about actively exploited vulnerabilities, novel attack techniques, notable incidents, and research that changes how defences are built.",
   "criteria": "Reward: actively exploited or high-impact vulnerabilities with technical detail, original threat research and malware analysis, incident write-ups with root causes, new defensive techniques, and policy changes with operational consequences. Rank an advisory higher when exploitation is confirmed. Penalise: vendor press releases, product announcements, recycled coverage of the same CVE without new information, fear-driven headlines, and generic awareness content.",
   "sections": ["vulnerabilities", "incidents", "threat-research", "defence", "cloud-and-supply-chain", "policy", "papers"],
