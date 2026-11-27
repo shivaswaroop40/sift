@@ -1,0 +1,112 @@
+{
+  "domain": "cybersecurity",
+  "date": "2026-11-27",
+  "generated_at": "2026-11-27T14:18:22.307Z",
+  "dry_run": false,
+  "model": "claude-sonnet-5-5",
+  "candidates": 34,
+  "kept": 9,
+  "feeds": [
+    {
+      "name": "The Hacker News",
+      "ok": true,
+      "items": 12
+    },
+    {
+      "name": "BleepingComputer",
+      "ok": true,
+      "items": 10
+    },
+    {
+      "name": "Krebs on Security",
+      "ok": true,
+      "items": 1
+    },
+    {
+      "name": "The Record",
+      "ok": true,
+      "items": 4
+    },
+    {
+      "name": "Dark Reading",
+      "ok": true,
+      "items": 2
+    },
+    {
+      "name": "SecurityWeek",
+      "ok": true,
+      "items": 9
+    },
+    {
+      "name": "Help Net Security",
+      "ok": true,
+      "items": 10
+    },
+    {
+      "name": "CISA Advisories",
+      "ok": true,
+      "items": 0
+    },
+    {
+      "name": "CISA News",
+      "ok": true,
+      "items": 0
+    },
+    {
+      "name": "SANS ISC",
+      "ok": true,
+      "items": 0
+    },
+    {
+      "name": "Schneier on Security",
+      "ok": true,
+      "items": 1
+    },
+    {
+      "name": "Project Zero",
+      "ok": true,
+      "items": 1
+    },
+    {
+      "name": "Cisco Talos",
+      "ok": true,
+      "items": 3
+    },
+    {
+      "name": "Unit 42",
+      "ok": true,
+      "items": 4
+    },
+    {
+      "name": "Check Point Research",
+      "ok": true,
+      "items": 2
+    },
+    {
+      "name": "Securelist",
+      "ok": true,
+      "items": 2
+    },
+    {
+      "name": "PortSwigger Research",
+      "ok": true,
+      "items": 1
+    },
+    {
+      "name": "Wiz Blog",
+      "ok": true,
+      "items": 6
+    },
+    {
+      "name": "arXiv cs.CR",
+      "ok": true,
+      "items": 0
+    }
+  ],
+  "triage_usage": {
+    "input": 5453,
+    "output": 2646,
+    "cacheRead": 0,
+    "fallbacks": 0
+  }
+}
